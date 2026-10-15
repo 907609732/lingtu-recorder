@@ -11,6 +11,8 @@ android {
     // RootEncoder 2.8.0 is published against API 37. Runtime behavior stays
     // pinned to targetSdk 36 while we keep Android 8 (API 26) compatibility.
     compileSdk = 37
+    // API 37 is published as android-37.0; explicitly resolve the same target in CI.
+    compileSdkMinor = 0
 
     defaultConfig {
         applicationId = "com.unpackvision.mobile"

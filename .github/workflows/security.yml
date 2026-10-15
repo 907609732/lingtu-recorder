@@ -43,7 +43,8 @@ jobs:
       - uses: android-actions/setup-android@9fc6c4e9069bf8d3d10b2204b1fb8f6ef7065407 # v3
         with:
           packages: platform-tools
-      - run: sdkmanager "platforms;android-37" "build-tools;36.0.0"
+          cmdline-tools-version: '15859902'
+      - run: sdkmanager "platforms;android-37.0" "build-tools;36.0.0"
       - run: ./gradlew testDebugUnitTest assembleDebug --no-daemon
         working-directory: mobile/UnpackVision.Android
       - uses: github/codeql-action/analyze@3b0bd1d116c0bde30213346b22d4f634d96a2fb0 # v3
