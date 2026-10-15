@@ -56,6 +56,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
@@ -253,7 +254,7 @@ private fun HomeWorkspace(
     ) {
         Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
             Column(Modifier.weight(1f)) {
-                Text("拆包智录", style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.SemiBold)
+                Text("灵兔拆包智录", style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.SemiBold)
                 Text("安卓协同端 · ${BuildConfig.VERSION_NAME}", color = Color(0xFF6E6E73))
             }
             OutlinedButton(onClick = onSettings) { Text("设置") }
@@ -316,7 +317,7 @@ private fun ConsentWorkspace(onAccepted: (Boolean) -> Unit) {
     ) {
         Spacer(Modifier.height(12.dp))
         Text("欢迎使用", style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.SemiBold)
-        Text("拆包智录", style = MaterialTheme.typography.titleLarge, color = Color(0xFF3478F6))
+        Text("灵兔拆包智录", style = MaterialTheme.typography.titleLarge, color = Color(0xFF3478F6))
         Card(colors = CardDefaults.cardColors(containerColor = Color.White), modifier = Modifier.fillMaxWidth()) {
             Column(Modifier.padding(18.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
                 Text("请先了解本地数据处理方式", fontWeight = FontWeight.SemiBold)
@@ -434,9 +435,25 @@ private fun SettingsWorkspace(
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         FeatureHeader(onBack, "设置", "连接信息、软件版本与开发者信息")
-        InfoCard("软件名称", "拆包智录")
+        InfoCard("软件名称", "灵兔拆包智录")
         InfoCard("版本号", BuildConfig.VERSION_NAME)
         InfoCard("开发者", "五成")
+        val uriHandler = LocalUriHandler.current
+        Card(colors = CardDefaults.cardColors(containerColor = Color.White), modifier = Modifier.fillMaxWidth()) {
+            Column(Modifier.padding(18.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                Text("官网与帮助", fontWeight = FontWeight.SemiBold)
+                listOf(
+                    "产品官网" to AppUpdateManager.WEBSITE_URL,
+                    "使用教程" to "${AppUpdateManager.WEBSITE_URL}/tutorial",
+                    "更新记录" to AppUpdateManager.RELEASE_URL,
+                    "开源代码" to AppUpdateManager.REPOSITORY_URL
+                ).forEach { (label, address) ->
+                    OutlinedButton(onClick = { uriHandler.openUri(address) }, modifier = Modifier.fillMaxWidth()) {
+                        Text(label)
+                    }
+                }
+            }
+        }
         InfoCard("电脑工位", credential?.stationId ?: "尚未配对")
         InfoCard("连接兜底", "局域网自动发现 / 手机热点 / USB或蓝牙网络共享 / USB调试直连")
         Card(colors = CardDefaults.cardColors(containerColor = Color.White), modifier = Modifier.fillMaxWidth()) {

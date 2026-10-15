@@ -16,7 +16,7 @@ using UnpackVision.Infrastructure.Diagnostics;
 using UnpackVision.StationHost;
 using static UnpackVision.StationHost.StationHostEndpointSupport;
 
-DiagnosticLog.Initialize("station-host", "2.5.3");
+DiagnosticLog.Initialize("station-host", "2.6.0");
 DiagnosticLog.RegisterGlobalExceptionHandlers();
 DiagnosticLog.Information("工位主机正在启动");
 
@@ -254,7 +254,7 @@ app.MapGet("/api/v1/health", (HttpContext context) =>
     // host must restart before a pairing QR can safely advertise the new IP.
     return Results.Ok(BuildHealthPayload(
         IsLoopback(context),
-        "2.5.3",
+        "2.6.0",
         stationOptions.LanHttpsEnabled,
         lanAddresses,
         DateTimeOffset.Now));
@@ -574,7 +574,7 @@ app.MapPost("/api/v1/stations/{id}/scans", async Task<IResult> (
     {
         var acknowledgement = await desktopBridge.TryRouteAsync(command, cancellationToken);
         return acknowledgement is null
-            ? Results.Json(new { error = "电脑桌面端未就绪，请先打开拆包智录" }, statusCode: StatusCodes.Status503ServiceUnavailable)
+            ? Results.Json(new { error = "电脑桌面端未就绪，请先打开灵兔拆包智录" }, statusCode: StatusCodes.Status503ServiceUnavailable)
             : Results.Ok(acknowledgement);
     }
 

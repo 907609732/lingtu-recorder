@@ -7,9 +7,9 @@
     <AssemblyName>拆包智录</AssemblyName>
     <RootNamespace>UnpackVision.App</RootNamespace>
     <ApplicationIcon>Assets\EcommerceUnpackRecorder.ico</ApplicationIcon>
-    <Product>拆包智录</Product>
+    <Product>灵兔拆包智录</Product>
     <Description>电商拆包录像、手机协同与数据同步</Description>
-    <Version>2.5.3</Version>
+    <Version>2.6.0</Version>
     <StartupObject>UnpackVision.App.Program</StartupObject>
   </PropertyGroup>
   <ItemGroup>

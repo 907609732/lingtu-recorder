@@ -37,7 +37,8 @@ internal sealed class DesktopUpdateService
 
     internal DesktopUpdateService()
     {
-        _manager = new UpdateManager(new GithubSource(ProductInfo.RepositoryUrl, null, false));
+        // Unsigned distributions use the prerelease channel; GitHub "latest" excludes it.
+        _manager = new UpdateManager(new GithubSource(ProductInfo.RepositoryUrl, null, true));
         var root = Path.Combine(
             Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
             "UnpackVision");

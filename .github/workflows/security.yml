@@ -25,7 +25,7 @@ jobs:
       - uses: actions/setup-dotnet@67a3573c9a986a3f9c594539f4ab511d57bb3ce9 # v4
         with:
           dotnet-version: "10.0.x"
-      - run: dotnet test .\UnpackVision.slnx -c Release
+      - run: .\scripts\build.ps1 -Configuration Release
       - uses: github/codeql-action/analyze@3b0bd1d116c0bde30213346b22d4f634d96a2fb0 # v3
 
   codeql-android:
@@ -41,7 +41,10 @@ jobs:
           distribution: temurin
           java-version: "21"
       - uses: android-actions/setup-android@9fc6c4e9069bf8d3d10b2204b1fb8f6ef7065407 # v3
-      - run: sdkmanager "platforms;android-37.0" "build-tools;37.0.0"
+        with:
+          packages: platform-tools
+          cmdline-tools-version: '15859902'
+      - run: sdkmanager "platforms;android-37.0" "build-tools;36.0.0"
       - run: ./gradlew testDebugUnitTest assembleDebug --no-daemon
         working-directory: mobile/UnpackVision.Android
       - uses: github/codeql-action/analyze@3b0bd1d116c0bde30213346b22d4f634d96a2fb0 # v3

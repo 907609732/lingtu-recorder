@@ -1,4 +1,5 @@
 using System.Runtime.InteropServices;
+using System.Diagnostics;
 using OpenCvSharp;
 using UnpackVision.Core;
 using UnpackVision.Infrastructure;
@@ -95,9 +96,8 @@ public sealed class ImageServicesTests : IDisposable
 
     private static void AssertCanOpenExclusively(string path)
     {
-        const int maximumAttempts = 5;
-        IOException? lastError = null;
-        for (var attempt = 1; attempt <= maximumAttempts; attempt++)
+        var elapsed = Stopwatch.StartNew();
+        while (true)
         {
             try
             {
@@ -106,15 +106,13 @@ public sealed class ImageServicesTests : IDisposable
                 Assert.True(stream.CanWrite);
                 return;
             }
-            catch (IOException error) when (attempt < maximumAttempts)
+            catch (IOException exception) when (
+                (exception.HResult & 0xffff) is 32 or 33 && elapsed.Elapsed < TimeSpan.FromSeconds(3))
             {
-                // Windows may defer native codec/antivirus handle release briefly after the await.
-                // The test still fails deterministically if the handle remains after this bounded wait.
-                lastError = error;
-                Thread.Sleep(50 * attempt);
+                // Windows codecs and external scanners can transiently hold a new image.
+                // A sustained handle leak still fails the exclusive-access assertion.
+                Thread.Sleep(50);
             }
         }
-
-        throw lastError ?? new IOException($"Could not exclusively open {path}.");
     }
 }
