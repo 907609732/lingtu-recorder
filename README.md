@@ -17,7 +17,7 @@
 - [最新版本与更新说明](https://github.com/907609732/lingtu-recorder/releases)
 - [源码仓库](https://github.com/907609732/lingtu-recorder)
 
-Windows 端使用 Velopack 每用户安装器，后续更新由软件后台下载并在录像空闲、用户确认后安装，不需要手工覆盖旧文件。当前安装器尚未取得代码签名证书，只作为 Prerelease 提供，首次下载可能出现 SmartScreen 提示；Release 同时提供 SHA256 和 GitHub 构建来源证明。
+Windows 端使用 Velopack 每用户安装器，后续更新由软件后台下载并在录像空闲、用户确认后安装，不需要手工覆盖旧文件。当前安装器尚未取得代码签名证书，只作为 Prerelease 提供，首次下载可能出现 SmartScreen 提示。发布页提供 SHA256；GitHub Actions 完成构建时另提供构建来源证明，具体以该版本说明和 build-info.json 为准。
 
 ## 当前可用能力
 
