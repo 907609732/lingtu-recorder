@@ -56,7 +56,9 @@ public sealed class MediaRuntimeCapabilityTests
             var result = await new ExternalToolRunner().RunAsync(
                 powershell,
                 ["-NoLogo", "-NoProfile", "-NonInteractive", "-EncodedCommand", EncodePowerShell(script)],
-                TimeSpan.FromSeconds(10));
+                // This checks environment isolation, not cold PowerShell startup speed.
+                // The separate 250 ms test above verifies the runner's timeout bound.
+                TimeSpan.FromSeconds(60));
 
             Assert.True(result.Started);
             Assert.False(result.TimedOut);

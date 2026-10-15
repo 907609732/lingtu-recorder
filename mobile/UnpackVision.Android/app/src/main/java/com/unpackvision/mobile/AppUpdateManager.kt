@@ -71,7 +71,7 @@ class AppUpdateManager(private val context: Context) {
         const val REPOSITORY_URL = "https://github.com/907609732/lingtu-recorder"
         const val WEBSITE_URL = "https://record.lttlt.top"
         const val RELEASE_URL = "$REPOSITORY_URL/releases"
-        const val APK_URL = "$REPOSITORY_URL/releases/download/v2.6.0/EcommerceUnpackRecorder-Android.apk"
+        const val APK_URL = "$REPOSITORY_URL/releases/download/v2.6.1/EcommerceUnpackRecorder-Android.apk"
         const val MANIFEST_URL = "$WEBSITE_URL/mobile-update.json"
         private const val PREFS = "app_updates"
         private const val LAST_CHECK = "last_check"

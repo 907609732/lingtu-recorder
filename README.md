@@ -6,14 +6,14 @@
 
 这是一个面向中小商家的零成本、开源 Windows 拆包/打包录像、手机协同与数据同步系统。它不会修改 HIK SCAN，也不包含海康的源代码、商标或专有资源。
 
-官网：[record.lttlt.top](https://record.lttlt.top) · [品牌升级与数据保留](docs/operations/brand-upgrade.md) · [2.6.0 预发布说明](docs/releases/2.6.0.md)
+官网：[record.lttlt.top](https://record.lttlt.top) · [品牌升级与数据保留](docs/operations/brand-upgrade.md) · [2.6.1 预发布说明](docs/releases/2.6.1.md)
 
-2.6.0 保留现有软件界面风格、布局和业务流程，只更新品牌名称、图标，并增加帮助链接。
+2.6.1 保留现有软件界面风格、布局和业务流程，只更新品牌名称、图标，并增加帮助链接。
 
 ## 下载
 
-- [Windows 安装器](https://github.com/907609732/lingtu-recorder/releases/download/v2.6.0/EcommerceUnpackRecorder-win-Setup.exe)
-- [安卓手机 APP](https://github.com/907609732/lingtu-recorder/releases/download/v2.6.0/EcommerceUnpackRecorder-Android.apk)
+- [Windows 安装器](https://github.com/907609732/lingtu-recorder/releases/download/v2.6.1/EcommerceUnpackRecorder-win-Setup.exe)
+- [安卓手机 APP](https://github.com/907609732/lingtu-recorder/releases/download/v2.6.1/EcommerceUnpackRecorder-Android.apk)
 - [最新版本与更新说明](https://github.com/907609732/lingtu-recorder/releases)
 - [源码仓库](https://github.com/907609732/lingtu-recorder)
 
