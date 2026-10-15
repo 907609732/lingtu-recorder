@@ -1,6 +1,6 @@
 ﻿[CmdletBinding()]
 param(
-    [string]$Version = '2.6.0',
+    [string]$Version = '2.6.1',
     [string]$AndroidApk,
     [switch]$SkipPublish,
     [switch]$RebuildExisting

@@ -207,7 +207,20 @@ try {
         if (-not (Test-Path -LiteralPath $installer)) {
             $partial = "$installer.partial-$([Guid]::NewGuid().ToString('N'))"
             try {
-                Invoke-WebRequest -Uri $installerUrl -OutFile $partial
+                # Hosted runners can receive an incomplete CDN response. Retry the
+                # download only; the pinned SHA256 check below remains mandatory.
+                for ($downloadAttempt = 1; $downloadAttempt -le 3; $downloadAttempt++) {
+                    try {
+                        Invoke-WebRequest -Uri $installerUrl -OutFile $partial
+                        break
+                    }
+                    catch {
+                        if ($downloadAttempt -eq 3) { throw }
+                        Remove-Item -LiteralPath $partial -Force -ErrorAction SilentlyContinue
+                        Write-Warning "GStreamer download interrupted; retry $downloadAttempt of 2."
+                        Start-Sleep -Seconds 3
+                    }
+                }
                 Move-Item -LiteralPath $partial -Destination $installer
             }
             finally {
