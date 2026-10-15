@@ -1,7 +1,7 @@
 <Window x:Class="UnpackVision.App.SafeUninstallWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="安全卸载拆包智录" Width="620" Height="560"
+        Title="安全卸载灵兔拆包智录" Width="620" Height="560"
         WindowStartupLocation="CenterOwner" ResizeMode="NoResize"
         Background="#F4F6F9" FontFamily="Microsoft YaHei UI">
   <Grid Margin="28">
@@ -28,9 +28,9 @@
         <Separator Margin="0,17,0,16" />
         <RadioButton x:Name="DeleteDataOption" GroupName="UninstallMode"
                      FontSize="15" FontWeight="SemiBold" Foreground="#B42318"
-                     Content="永久删除拆包智录的本机数据和录像" />
+                     Content="永久删除灵兔拆包智录的本机数据和录像" />
         <TextBlock Margin="28,7,0,0" TextWrapping="Wrap" Foreground="#9A3412" LineHeight="20"
-                   Text="只删除当前工作区中由拆包智录生成的 Unpacking、Packing、Snapshots 和 .unpackvision 数据；不会删除 Excel 或录像目录中的其他文件。选择后还会连续弹出两次警告。" />
+                   Text="只删除当前工作区中由灵兔拆包智录生成的 Unpacking、Packing、Snapshots 和 .unpackvision 数据；不会删除 Excel 或录像目录中的其他文件。选择后还会连续弹出两次警告。" />
       </StackPanel>
     </Border>
 

@@ -8,7 +8,7 @@ internal static class LegalDocuments
     internal const string SecurityUrl = ProductInfo.RepositoryUrl + "/security";
 
     internal const string TermsText = """
-        拆包智录用户协议
+        灵兔拆包智录用户协议
         版本：2026-07-29（2.3）
 
         一、软件性质
@@ -31,11 +31,11 @@ internal static class LegalDocuments
         """;
 
     internal const string PrivacyText = """
-        拆包智录隐私政策
+        灵兔拆包智录隐私政策
         版本：2026-07-29（2.3）
 
         一、处理原则
-        软件采用本地优先、最小必要原则。2.5.3 不上传快递单号、录像、备注、Excel 路径、摄像头名称、硬件标识、账号或配对信息。
+        软件采用本地优先、最小必要原则。2.6.0 不上传快递单号、录像、备注、Excel 路径、摄像头名称、硬件标识、账号或配对信息。
 
         二、本地处理的数据
         电脑端会按使用者操作保存单号、录像、截图、异常标签、备注、同步状态和设备授权记录。手机端会保存加密后的工位访问令牌、应用设置和尚未发送的离线扫码事件。这些数据默认只位于使用者设备。

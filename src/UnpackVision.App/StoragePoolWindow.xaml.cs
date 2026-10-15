@@ -69,7 +69,7 @@ public partial class StoragePoolWindow : Window
         }
         var choice = MessageBox.Show(
             this,
-            $"只从拆包智录的盘位配置中移除“{selected.DisplayName}”。\n\n" +
+            $"只从灵兔拆包智录的盘位配置中移除“{selected.DisplayName}”。\n\n" +
             $"目录 {selected.RootPath} 中的录像、照片和迁移索引不会被删除。是否继续？",
             "移除录像盘位",
             MessageBoxButton.YesNo,

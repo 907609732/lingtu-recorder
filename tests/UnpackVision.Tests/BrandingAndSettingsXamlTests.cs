@@ -15,7 +15,7 @@ public sealed class BrandingAndSettingsXamlTests
     {
         var settings = Load("SettingsWindow.xaml");
         Assert.Contains(settings.Descendants(Presentation + "Button"), element =>
-            (string?)element.Attribute("Content") == "安全卸载拆包智录" &&
+            (string?)element.Attribute("Content") == "安全卸载灵兔拆包智录" &&
             (string?)element.Attribute("Click") == "SafeUninstall_OnClick");
 
         var dialog = Load("SafeUninstallWindow.xaml");

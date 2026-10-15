@@ -68,10 +68,11 @@ sealed interface MobileUpdateResult {
 
 class AppUpdateManager(private val context: Context) {
     companion object {
-        const val REPOSITORY_URL = "https://github.com/907609732/unpack-vision"
-        const val RELEASE_URL = "$REPOSITORY_URL/releases/latest"
-        const val APK_URL = "$RELEASE_URL/download/EcommerceUnpackRecorder-Android.apk"
-        const val MANIFEST_URL = "$RELEASE_URL/download/mobile-update.json"
+        const val REPOSITORY_URL = "https://github.com/907609732/lingtu-recorder"
+        const val WEBSITE_URL = "https://record.lttlt.top"
+        const val RELEASE_URL = "$REPOSITORY_URL/releases"
+        const val APK_URL = "$REPOSITORY_URL/releases/download/v2.6.0/EcommerceUnpackRecorder-Android.apk"
+        const val MANIFEST_URL = "$WEBSITE_URL/mobile-update.json"
         private const val PREFS = "app_updates"
         private const val LAST_CHECK = "last_check"
         private val CHECK_INTERVAL = TimeUnit.DAYS.toMillis(1)
@@ -108,7 +109,7 @@ class AppUpdateManager(private val context: Context) {
     ): File = withContext(Dispatchers.IO) {
         val manager = context.getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
         val request = DownloadManager.Request(Uri.parse(manifest.apkUrl))
-            .setTitle("拆包智录 ${manifest.versionName}")
+            .setTitle("灵兔拆包智录 ${manifest.versionName}")
             .setDescription("正在下载手机端更新")
             .setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
             .setAllowedOverMetered(true)

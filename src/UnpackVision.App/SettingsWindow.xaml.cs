@@ -525,7 +525,7 @@ public partial class SettingsWindow : Window
         MigrationProgressPercentText.Text = $"{percentage:0}%";
         MigrationProgressCountText.Text = $"{completedFiles:N0}/{totalFiles:N0} 个文件 · {FormatBytes(completedBytes)}/{FormatBytes(totalBytes)}";
         MigrationProgressDetailText.Text = $"当前文件：{currentFile}";
-        Title = $"迁移录像 {percentage:0}% · 拆包智录";
+        Title = $"迁移录像 {percentage:0}% · 灵兔拆包智录";
         WorkspaceStatusText.Text = $"正在迁移：{currentFile}（{completedFiles:N0}/{totalFiles:N0}）";
     }
 
@@ -580,6 +580,8 @@ public partial class SettingsWindow : Window
         var url = (sender as FrameworkElement)?.Tag?.ToString() switch
         {
             "repository" => ProductInfo.RepositoryUrl,
+            "website" => ProductInfo.WebsiteUrl,
+            "tutorial" => ProductInfo.TutorialUrl,
             "windows" => ProductInfo.WindowsDownloadUrl,
             "android" => ProductInfo.AndroidDownloadUrl,
             "security" => LegalDocuments.SecurityUrl,
@@ -748,7 +750,7 @@ public partial class SettingsWindow : Window
         if (updater is null)
         {
             MessageBox.Show(this,
-                "当前运行的是开发版或便携版，没有检测到 Velopack 卸载器。\n\n正式安装版可在 Windows 设置 → 应用 → 已安装的应用 → 拆包智录 → 卸载。",
+                "当前运行的是开发版或便携版，没有检测到 Velopack 卸载器。\n\n正式安装版可在 Windows 设置 → 应用 → 已安装的应用 → 灵兔拆包智录 → 卸载。",
                 "未检测到正式安装",
                 MessageBoxButton.OK,
                 MessageBoxImage.Information);

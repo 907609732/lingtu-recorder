@@ -13,10 +13,10 @@ class AppUpdateManagerTest {
             {
               "versionName": "2.1.1",
               "versionCode": 20101,
-              "apkUrl": "https://github.com/907609732/unpack-vision/releases/download/v2.2.0/app.apk",
+              "apkUrl": "https://github.com/907609732/lingtu-recorder/releases/download/v2.2.0/app.apk",
               "sha256": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
               "notesUrl": "",
-              "releaseNotesUrl": "https://github.com/907609732/unpack-vision/releases/tag/v2.2.0",
+              "releaseNotesUrl": "https://github.com/907609732/lingtu-recorder/releases/tag/v2.2.0",
               "minimumSupportedVersion": "2.1.0",
               "critical": true,
               "publishedAt": "2026-07-29T00:00:00Z"
@@ -27,7 +27,7 @@ class AppUpdateManagerTest {
         assertEquals("2.1.1", manifest.versionName)
         assertEquals(20101, manifest.versionCode)
         assertEquals(
-            "https://github.com/907609732/unpack-vision/releases/download/v2.2.0/app.apk",
+            "https://github.com/907609732/lingtu-recorder/releases/download/v2.2.0/app.apk",
             manifest.apkUrl
         )
         assertEquals("a".repeat(64), manifest.sha256)

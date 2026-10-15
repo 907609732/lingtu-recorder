@@ -3,7 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:local="clr-namespace:UnpackVision.App"
         xmlns:shell="clr-namespace:System.Windows.Shell;assembly=PresentationFramework"
-        Title="拆包智录" Width="1480" Height="920"
+        Title="灵兔拆包智录" Width="1480" Height="920"
         MinWidth="1180" MinHeight="740" Background="#F3F5F8"
         WindowStartupLocation="CenterScreen" KeyDown="Window_OnKeyDown"
         WindowStyle="None" ResizeMode="CanResize" UseLayoutRounding="True" SnapsToDevicePixels="True">
@@ -89,7 +89,7 @@
                  Width="48" Height="48" Stretch="Uniform"
                  RenderOptions.BitmapScalingMode="HighQuality" />
           <StackPanel Margin="13,0,0,0" VerticalAlignment="Center">
-            <TextBlock Text="拆包智录" FontSize="21" FontWeight="SemiBold" Foreground="#1D1D1F" />
+            <TextBlock Text="灵兔拆包智录" FontSize="21" FontWeight="SemiBold" Foreground="#1D1D1F" />
             <TextBlock Text="拆包录像与数据同步" FontSize="11.5" Foreground="#7C7C82" Margin="0,2,0,0" />
           </StackPanel>
         </StackPanel>
@@ -424,7 +424,7 @@
                  KeyDown="ScannerInput_OnKeyDown" />
         <TextBox x:Name="SyncStatusText" Text="Excel：等待任务" Style="{StaticResource SelectableText}" Foreground="#8C8C91" FontSize="10"
                    VerticalAlignment="Center" Margin="12,0,0,0" />
-        <TextBlock Text="版本 2.5.3 · 开发者 五成" Foreground="#A0A0A5" FontSize="10" VerticalAlignment="Center" Margin="14,0,0,0" />
+        <TextBlock Text="版本 2.6.0 · 开发者 五成" Foreground="#A0A0A5" FontSize="10" VerticalAlignment="Center" Margin="14,0,0,0" />
       </StackPanel>
     </Grid>
 

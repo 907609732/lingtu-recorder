@@ -121,7 +121,7 @@ public partial class App : System.Windows.Application
             DiagnosticLog.Error(exception, "桌面端启动流程失败");
             MessageBox.Show(
                 exception.ToString(),
-                "拆包智录启动失败",
+                "灵兔拆包智录启动失败",
                 MessageBoxButton.OK,
                 MessageBoxImage.Error);
             Shutdown();

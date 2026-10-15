@@ -1,6 +1,6 @@
-[CmdletBinding()]
+﻿[CmdletBinding()]
 param(
-    [string]$Version = '2.5.3',
+    [string]$Version = '2.6.0',
     [string]$AndroidApk,
     [switch]$SkipPublish,
     [switch]$RebuildExisting
@@ -10,7 +10,7 @@ $ErrorActionPreference = 'Stop'
 $repositoryRoot = [System.IO.Path]::GetFullPath((Join-Path $PSScriptRoot '..'))
 $publishFolder = "staging\$Version\App"
 $publishDirectory = Join-Path $repositoryRoot "artifacts\publish\$publishFolder"
-$velopackDirectory = Join-Path $repositoryRoot 'artifacts\velopack-release'
+$velopackDirectory = Join-Path $repositoryRoot "artifacts\velopack-release\$Version"
 $releaseDirectory = Join-Path $repositoryRoot 'artifacts\release-output'
 $toolDirectory = Join-Path $repositoryRoot 'artifacts\tools'
 $iconPath = Join-Path $repositoryRoot 'src\UnpackVision.App\Assets\EcommerceUnpackRecorder.ico'
@@ -45,7 +45,7 @@ if ($LASTEXITCODE -ne 0) { throw 'The audited media runtime gate failed before p
 $sadpRuntimeDirectory = Join-Path $publishDirectory 'runtimes\hikvision-tooling\1.0.43'
 & (Join-Path $PSScriptRoot 'verify-hikvision-sadp-package.ps1') -RuntimeRoot $sadpRuntimeDirectory
 if ($LASTEXITCODE -ne 0) { throw 'The pinned Hikvision SADP runtime gate failed before packaging.' }
-$productName = [System.IO.Path]::GetFileNameWithoutExtension($mainExecutable.Name)
+$productName = '灵兔拆包智录'
 
 foreach ($required in @($iconPath, $releaseNotes)) {
     if (-not (Test-Path -LiteralPath $required)) {
@@ -95,7 +95,7 @@ else {
         --packDir $publishDirectory `
         --mainExe $mainExecutable.Name `
         --packTitle $productName `
-        --packAuthors 'Wucheng' `
+        --packAuthors '灵兔 LTTLT · 五成' `
         --releaseNotes $releaseNotes `
         --icon $iconPath `
         --runtime win-x64 `
@@ -114,7 +114,8 @@ $releaseFiles = Get-ChildItem -LiteralPath $velopackDirectory -File |
     Where-Object {
         $_.Name -match [regex]::Escape($Version) -or
         $_.Name -match '^releases\.win\.json$' -or
-        $_.Name -match 'Setup\.exe$'
+        $_.Name -match 'Setup\.exe$' -or
+        $_.Name -match 'Portable\.zip$'
     }
 foreach ($file in $releaseFiles) {
     Copy-Item -LiteralPath $file.FullName -Destination $releaseDirectory -Force
@@ -125,6 +126,11 @@ $setup = Get-ChildItem -LiteralPath $velopackDirectory -File -Filter '*Setup.exe
     Select-Object -First 1
 if ($null -eq $setup) { throw 'Velopack did not produce a Windows setup executable.' }
 Copy-Item -LiteralPath $setup.FullName -Destination (Join-Path $releaseDirectory "$productName-Setup.exe") -Force
+Copy-Item -LiteralPath $setup.FullName -Destination (Join-Path $releaseDirectory "$productName-$Version-Setup.exe") -Force
+$portable = Join-Path $velopackDirectory 'EcommerceUnpackRecorder-win-Portable.zip'
+if (Test-Path -LiteralPath $portable) {
+    Copy-Item -LiteralPath $portable -Destination (Join-Path $releaseDirectory "$productName-$Version-Portable.zip") -Force
+}
 
 if (-not [string]::IsNullOrWhiteSpace($AndroidApk)) {
     $resolvedApk = [System.IO.Path]::GetFullPath($AndroidApk)
@@ -133,16 +139,17 @@ if (-not [string]::IsNullOrWhiteSpace($AndroidApk)) {
     }
     $apkDestination = Join-Path $releaseDirectory 'EcommerceUnpackRecorder-Android.apk'
     Copy-Item -LiteralPath $resolvedApk -Destination $apkDestination -Force
+    Copy-Item -LiteralPath $resolvedApk -Destination (Join-Path $releaseDirectory "$productName-$Version-Android.apk") -Force
     $apkHash = (Get-FileHash -LiteralPath $apkDestination -Algorithm SHA256).Hash.ToLowerInvariant()
     $mobileManifest = @{
         versionName = $Version
         versionCode = $versionCode
-        apkUrl = 'https://github.com/907609732/unpack-vision/releases/latest/download/EcommerceUnpackRecorder-Android.apk'
+        apkUrl = "https://github.com/907609732/lingtu-recorder/releases/download/v$Version/EcommerceUnpackRecorder-Android.apk"
         sha256 = $apkHash
         minSdk = 26
         publishedAt = [DateTimeOffset]::UtcNow.ToString('o')
-        notesUrl = "https://github.com/907609732/unpack-vision/releases/tag/v$Version"
-        releaseNotesUrl = "https://github.com/907609732/unpack-vision/releases/tag/v$Version"
+        notesUrl = "https://github.com/907609732/lingtu-recorder/releases/tag/v$Version"
+        releaseNotesUrl = "https://github.com/907609732/lingtu-recorder/releases/tag/v$Version"
         minimumSupportedVersion = '2.1.0'
         critical = $false
     } | ConvertTo-Json
@@ -156,7 +163,7 @@ $desktopManifest = @{
     version = $Version
     minimumSupportedVersion = '2.1.0'
     critical = $false
-    releaseNotesUrl = "https://github.com/907609732/unpack-vision/releases/tag/v$Version"
+    releaseNotesUrl = "https://github.com/907609732/lingtu-recorder/releases/tag/v$Version"
     publishedAt = [DateTimeOffset]::UtcNow.ToString('o')
 } | ConvertTo-Json
 [IO.File]::WriteAllText(
