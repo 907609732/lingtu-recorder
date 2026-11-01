@@ -7,6 +7,39 @@ namespace UnpackVision.Tests;
 public sealed class RecordingFrameWriterTests
 {
     [Fact]
+    public void Pipe_write_failure_preserves_original_exception_without_termination()
+    {
+        var failure = new IOException("synthetic pipe failure");
+        using var stream = new ControlledWriteStream(Task.FromException(failure));
+        var terminated = false;
+        var actual = Assert.Throws<IOException>(() =>
+            GStreamerRecordingFrameWriter.WriteWithHardTimeout(
+                stream, new byte[16], TimeSpan.FromMilliseconds(80), () => terminated = true));
+        Assert.Same(failure, actual);
+        Assert.False(terminated);
+    }
+
+    [Fact]
+    public void Pipe_write_cancellation_is_not_wrapped_or_treated_as_timeout()
+    {
+        using var stream = new ControlledWriteStream(Task.FromCanceled(new CancellationToken(true)));
+        var terminated = false;
+        Assert.ThrowsAny<OperationCanceledException>(() =>
+            GStreamerRecordingFrameWriter.WriteWithHardTimeout(
+                stream, new byte[16], TimeSpan.FromMilliseconds(80), () => terminated = true));
+        Assert.False(terminated);
+    }
+
+    [Fact]
+    public void Completed_pipe_write_does_not_terminate_encoder()
+    {
+        using var stream = new ControlledWriteStream(Task.CompletedTask);
+        GStreamerRecordingFrameWriter.WriteWithHardTimeout(
+            stream, new byte[16], TimeSpan.FromMilliseconds(80),
+            () => throw new InvalidOperationException("Unexpected termination"));
+    }
+
+    [Fact]
     public void Pipe_write_timeout_terminates_encoder_and_returns_within_hard_limit()
     {
         using var stream = new NeverCompletingWriteStream();
@@ -175,7 +208,13 @@ public sealed class RecordingFrameWriterTests
         }
     }
 
-    private sealed class NeverCompletingWriteStream : Stream
+    private sealed class NeverCompletingWriteStream : ControlledWriteStream
+    {
+        public NeverCompletingWriteStream()
+            : base(new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously).Task) { }
+    }
+
+    private class ControlledWriteStream(Task writeTask) : Stream
     {
         public override bool CanRead => false;
         public override bool CanSeek => false;
@@ -188,6 +227,6 @@ public sealed class RecordingFrameWriterTests
         public override void SetLength(long value) => throw new NotSupportedException();
         public override void Write(byte[] buffer, int offset, int count) => throw new NotSupportedException();
         public override ValueTask WriteAsync(ReadOnlyMemory<byte> buffer, CancellationToken cancellationToken = default) =>
-            new(new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously).Task);
+            new(writeTask);
     }
 }
