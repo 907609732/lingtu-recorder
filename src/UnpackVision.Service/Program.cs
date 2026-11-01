@@ -4,11 +4,14 @@ using UnpackVision.Infrastructure;
 using UnpackVision.Infrastructure.Diagnostics;
 using UnpackVision.Service;
 
-DiagnosticLog.Initialize("sync-service", "2.6.2");
+DiagnosticLog.Initialize("sync-service", "2.6.3");
 DiagnosticLog.RegisterGlobalExceptionHandlers();
 DiagnosticLog.Information("兼容同步服务正在启动");
 
 var builder = WebApplication.CreateBuilder(args);
+// Local file paths are an explicitly trusted desktop capability, never a shared LAN API.
+builder.WebHost.UseUrls(LocalApiBoundary.ValidateUrls(builder.Configuration["urls"]))
+    .PreferHostingUrls(true);
 builder.Logging.AddProvider(DiagnosticLog.CreateLoggerProvider());
 builder.Logging.AddFilter("Microsoft.AspNetCore.Hosting.Diagnostics", LogLevel.Warning);
 var storageOptions = BindOptions<StorageOptions>(builder.Configuration, "Storage");
@@ -76,6 +79,7 @@ if (args.Contains("--show-api-key", StringComparer.OrdinalIgnoreCase))
     return;
 }
 
+app.UseMiddleware<LocalApiBoundary>();
 app.Use(async (context, next) =>
 {
     var startedAt = Stopwatch.GetTimestamp();

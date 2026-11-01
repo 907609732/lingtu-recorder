@@ -13,6 +13,7 @@
 ## 安全边界
 
 - 管理 API 与 OpenAPI 仅允许本机回环访问。
+- 本机图像 API 密钥授予当前 Windows 用户权限内的完整图片路径读写能力；不支持提权运行、反向代理或向其他用户共享该密钥。手机网络服务使用独立的工位权限模型。参见 [本机图像 API 边界](docs/architecture/decisions/0011-local-image-api-trust.md)。
 - 手机控制使用证书固定 HTTPS，媒体发布使用 RTSPS。
 - 公开健康接口只返回存活、版本和 TLS 状态。
 - 默认不开放公网，不提供云端数据存储。
