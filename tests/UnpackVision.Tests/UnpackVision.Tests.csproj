@@ -10,6 +10,7 @@
     <ProjectReference Include="../../src/UnpackVision.Infrastructure/UnpackVision.Infrastructure.csproj" />
     <ProjectReference Include="../../src/UnpackVision.App/UnpackVision.App.csproj" />
     <ProjectReference Include="../../src/UnpackVision.StationHost/UnpackVision.StationHost.csproj" />
+    <ProjectReference Include="../../src/UnpackVision.Service/UnpackVision.Service.csproj" />
     <ProjectReference Include="../../scripts/acceptance/UnpackVision.Acceptance.csproj" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="18.8.1" />
     <PackageReference Include="TngTech.ArchUnitNET.xUnit" Version="0.13.3" />
@@ -83,8 +84,8 @@
     <None Include="../../mobile/UnpackVision.Android/app/build.gradle.kts"
           Link="TestData/android-app-build.gradle.kts"
           CopyToOutputDirectory="PreserveNewest" />
-    <None Include="../../docs/releases/2.6.2.md"
-          Link="TestData/release-2.6.2.md"
+    <None Include="../../docs/releases/2.6.3.md"
+          Link="TestData/release-2.6.3.md"
           CopyToOutputDirectory="PreserveNewest" />
     <None Include="../../src/UnpackVision.App/HistoryWindow.xaml"
           Link="TestData/HistoryWindow.xaml"

@@ -1,6 +1,6 @@
-﻿[CmdletBinding()]
+[CmdletBinding()]
 param(
-    [string]$Version = '2.6.2',
+    [string]$Version = '2.6.3',
     [string]$AndroidApk,
     [string]$OutputDirectory,
     [switch]$SkipPublish,
