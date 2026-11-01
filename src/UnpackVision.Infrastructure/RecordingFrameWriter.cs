@@ -314,8 +314,20 @@ internal sealed partial class GStreamerRecordingFrameWriter : IRecordingFrameWri
         if (timeout <= TimeSpan.Zero) throw new ArgumentOutOfRangeException(nameof(timeout));
 
         var writeTask = destination.WriteAsync(buffer).AsTask();
-        var winner = Task.WhenAny(writeTask, Task.Delay(timeout)).GetAwaiter().GetResult();
-        if (!ReferenceEquals(winner, writeTask))
+        bool completed;
+        try
+        {
+            // Capture threads are synchronous. Waiting on Task.Delay would require a
+            // pool worker to signal the deadline, which can stall under encoder load.
+            completed = writeTask.Wait(timeout);
+        }
+        catch (AggregateException)
+        {
+            // Keep the original stream exception/cancellation contract, not Wait's wrapper.
+            writeTask.GetAwaiter().GetResult();
+            throw;
+        }
+        if (!completed)
         {
             terminate();
             _ = writeTask.ContinueWith(

@@ -13,9 +13,9 @@ internal static class ProductInfo
     internal const string LatestReleaseUrl = RepositoryUrl + "/releases";
     internal const string DesktopManifestUrl = WebsiteUrl + "/desktop-update.json";
     internal const string WindowsDownloadUrl =
-        RepositoryUrl + "/releases/download/v2.6.1/EcommerceUnpackRecorder-win-Setup.exe";
+        RepositoryUrl + "/releases/download/v2.6.2/EcommerceUnpackRecorder-win-Setup.exe";
     internal const string AndroidDownloadUrl =
-        RepositoryUrl + "/releases/download/v2.6.1/EcommerceUnpackRecorder-Android.apk";
+        RepositoryUrl + "/releases/download/v2.6.2/EcommerceUnpackRecorder-Android.apk";
     internal static string TelemetryEndpoint =>
         Environment.GetEnvironmentVariable("UNPACKVISION_TELEMETRY_ENDPOINT") ??
         ReadOptionalAsset("Assets/telemetry-endpoint.txt");
@@ -23,7 +23,7 @@ internal static class ProductInfo
     internal static string Version =>
         Assembly.GetExecutingAssembly().GetName().Version is { } version
             ? $"{version.Major}.{version.Minor}.{version.Build}"
-            : "2.6.1";
+            : "2.6.2";
 
     private static string ReadOptionalAsset(string relativePath)
     {

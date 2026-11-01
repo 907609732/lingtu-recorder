@@ -1,5 +1,15 @@
 # 灵兔拆包智录品牌素材
 
+## 2026-11-01 新品牌参考更新
+
+采用用户本次提供的新版跃兔图形，保留浅蓝底、纸箱和摄像头主体，在右下角增加白色圆角徽章。软件布局、配色与业务内容不变。下方 2.6.0 记录为历史记录，不代表本次素材。
+
+- 参考原图：`design/brand/reference-20261101/`，通过钉钉文档媒体下载保存，两个资源 ID 分别为 `73483d37-53ff-4d8d-babb-1bc360f934c1` 和 `3117f501-af17-434d-a193-bfbee0e32aac`。
+- 工具：built-in ImageGen；原软件图标与新版无字跃兔作为局部编辑参考。提示要求保留纸箱、摄像头与底板构图，只添加右下角白色品牌徽章，清理兔形噪点，不加文字。
+- 原稿：`design/brand/LingtuRecorder-Logo-20261101-Source.png`；导出母版：`design/brand/LingtuRecorder-Logo-20261101-Masked.png`。
+- 复现导出：运行 `scripts/generate-brand-assets.ps1`，Source 指向本次原稿，AlphaMask 指向 `design/brand/legacy-2.5.2/EcommerceUnpackRecorder-Logo.png`，ProcessedSourceDestination 指向本次母版。
+- 已替换 Windows PNG/ICO、Android 各密度与自适应前景、README 图片、官网 Logo、favicon、Apple 图标与分享封面。现有发布安装包内嵌图标不会随源码更新改变，需要单独构建并验收新版包。
+
 ## 最终选择
 
 用户确认采用最小品牌调整：保留原软件 Logo 的浅蓝圆角底、纸箱与右上摄像头构图，仅在右下角加入灵兔主品牌小徽章。软件既有界面风格、布局与业务内容保持现状，不以本次 Logo 更新为由重新设计界面。
