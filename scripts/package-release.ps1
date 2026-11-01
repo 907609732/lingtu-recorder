@@ -1,7 +1,8 @@
 ﻿[CmdletBinding()]
 param(
-    [string]$Version = '2.6.1',
+    [string]$Version = '2.6.2',
     [string]$AndroidApk,
+    [string]$OutputDirectory,
     [switch]$SkipPublish,
     [switch]$RebuildExisting
 )
@@ -11,7 +12,15 @@ $repositoryRoot = [System.IO.Path]::GetFullPath((Join-Path $PSScriptRoot '..'))
 $publishFolder = "staging\$Version\App"
 $publishDirectory = Join-Path $repositoryRoot "artifacts\publish\$publishFolder"
 $velopackDirectory = Join-Path $repositoryRoot "artifacts\velopack-release\$Version"
-$releaseDirectory = Join-Path $repositoryRoot 'artifacts\release-output'
+$releaseDirectory = if ([string]::IsNullOrWhiteSpace($OutputDirectory)) {
+    Join-Path $repositoryRoot 'artifacts\release-output'
+} else {
+    [IO.Path]::GetFullPath($OutputDirectory)
+}
+$artifactPrefix = [IO.Path]::GetFullPath((Join-Path $repositoryRoot 'artifacts')) + [IO.Path]::DirectorySeparatorChar
+if (-not ([IO.Path]::GetFullPath($releaseDirectory)).StartsWith($artifactPrefix, [StringComparison]::OrdinalIgnoreCase)) {
+    throw 'Release output must stay in a dedicated directory below artifacts.'
+}
 $toolDirectory = Join-Path $repositoryRoot 'artifacts\tools'
 $iconPath = Join-Path $repositoryRoot 'src\UnpackVision.App\Assets\EcommerceUnpackRecorder.ico'
 $releaseNotes = Join-Path $repositoryRoot "docs\releases\$Version.md"
@@ -38,6 +47,9 @@ $mainExecutable = Get-ChildItem -LiteralPath $publishDirectory -Filter '*.exe' -
     Select-Object -First 1
 if ($null -eq $mainExecutable) {
     throw "The published desktop executable was not found in $publishDirectory"
+}
+if ($mainExecutable.VersionInfo.ProductVersion.Split('+')[0] -ne $Version) {
+    throw "Published executable version does not match requested package version $Version"
 }
 $runtimeDirectory = Join-Path $publishDirectory 'runtimes\gstreamer\1.28.5'
 & (Join-Path $PSScriptRoot 'verify-media-runtime-package.ps1') -RuntimeRoot $runtimeDirectory
@@ -127,9 +139,11 @@ $setup = Get-ChildItem -LiteralPath $velopackDirectory -File -Filter '*Setup.exe
 if ($null -eq $setup) { throw 'Velopack did not produce a Windows setup executable.' }
 Copy-Item -LiteralPath $setup.FullName -Destination (Join-Path $releaseDirectory "$productName-Setup.exe") -Force
 Copy-Item -LiteralPath $setup.FullName -Destination (Join-Path $releaseDirectory "$productName-$Version-Setup.exe") -Force
+Copy-Item -LiteralPath $setup.FullName -Destination (Join-Path $releaseDirectory "LingtuRecorder-$Version-Setup.exe") -Force
 $portable = Join-Path $velopackDirectory 'EcommerceUnpackRecorder-win-Portable.zip'
 if (Test-Path -LiteralPath $portable) {
     Copy-Item -LiteralPath $portable -Destination (Join-Path $releaseDirectory "$productName-$Version-Portable.zip") -Force
+    Copy-Item -LiteralPath $portable -Destination (Join-Path $releaseDirectory "LingtuRecorder-$Version-Portable.zip") -Force
 }
 
 if (-not [string]::IsNullOrWhiteSpace($AndroidApk)) {
@@ -140,6 +154,7 @@ if (-not [string]::IsNullOrWhiteSpace($AndroidApk)) {
     $apkDestination = Join-Path $releaseDirectory 'EcommerceUnpackRecorder-Android.apk'
     Copy-Item -LiteralPath $resolvedApk -Destination $apkDestination -Force
     Copy-Item -LiteralPath $resolvedApk -Destination (Join-Path $releaseDirectory "$productName-$Version-Android.apk") -Force
+    Copy-Item -LiteralPath $resolvedApk -Destination (Join-Path $releaseDirectory "LingtuRecorder-$Version-Android.apk") -Force
     $apkHash = (Get-FileHash -LiteralPath $apkDestination -Algorithm SHA256).Hash.ToLowerInvariant()
     $mobileManifest = @{
         versionName = $Version
