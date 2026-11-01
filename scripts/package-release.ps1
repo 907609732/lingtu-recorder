@@ -17,9 +17,19 @@ $releaseDirectory = if ([string]::IsNullOrWhiteSpace($OutputDirectory)) {
 } else {
     [IO.Path]::GetFullPath($OutputDirectory)
 }
-$artifactPrefix = [IO.Path]::GetFullPath((Join-Path $repositoryRoot 'artifacts')) + [IO.Path]::DirectorySeparatorChar
-if (-not ([IO.Path]::GetFullPath($releaseDirectory)).StartsWith($artifactPrefix, [StringComparison]::OrdinalIgnoreCase)) {
-    throw 'Release output must stay in a dedicated directory below artifacts.'
+$releaseOutputRoot = [IO.Path]::GetFullPath((Join-Path $repositoryRoot 'artifacts\release-output'))
+if (-not $releaseDirectory.Equals($releaseOutputRoot, [StringComparison]::OrdinalIgnoreCase) -and
+    -not $releaseDirectory.StartsWith($releaseOutputRoot + [IO.Path]::DirectorySeparatorChar, [StringComparison]::OrdinalIgnoreCase)) {
+    throw 'Release output must stay in the dedicated artifacts/release-output tree.'
+}
+for ($directory = [IO.DirectoryInfo]::new($releaseDirectory); $null -ne $directory -and $directory.FullName.StartsWith($releaseOutputRoot, [StringComparison]::OrdinalIgnoreCase); $directory = $directory.Parent) {
+    if ($directory.Exists -and ($directory.Attributes -band [IO.FileAttributes]::ReparsePoint)) {
+        throw 'Release output must not traverse a junction or symbolic link.'
+    }
+}
+if (-not [string]::IsNullOrWhiteSpace($AndroidApk) -and
+    ([IO.Path]::GetFullPath($AndroidApk)).StartsWith($releaseDirectory + [IO.Path]::DirectorySeparatorChar, [StringComparison]::OrdinalIgnoreCase)) {
+    throw 'Android input must not be inside the release output directory.'
 }
 $toolDirectory = Join-Path $repositoryRoot 'artifacts\tools'
 $iconPath = Join-Path $repositoryRoot 'src\UnpackVision.App\Assets\EcommerceUnpackRecorder.ico'
