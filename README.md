@@ -1,5 +1,7 @@
 # 灵兔拆包智录
 
+**简体中文** | [English](README.en.md)
+
 <p align="center">
   <img src="docs/assets/logo.png" width="180" alt="灵兔拆包智录 Logo">
 </p>
