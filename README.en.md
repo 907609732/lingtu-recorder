@@ -8,7 +8,7 @@
 
 Lingtu Unpack Recorder is a free, open-source Windows system for recording parcel unpacking and packing, working with an Android phone, and synchronizing data. It does not modify HIK SCAN or contain Hikvision source code, trademarks, or proprietary assets.
 
-**Quick links:** [Download and install](#download-and-install) · [Screenshots](#screenshots) · [Feature overview](#feature-overview) · [Step-by-step guide (English)](docs/user-guide.en.md) · [FAQ](docs/user-guide.en.md#20-faq) · [Privacy and data](#privacy-and-data) · [Data locations](#data-locations) · [Safe uninstall](#safe-uninstall) · [Build from source](#build-test-and-release) · [License](#license-and-independent-implementation)
+**Quick links:** [Download and install](#download-and-install) · [Screenshots](#screenshots) · [Feature overview](#feature-overview) · [Step-by-step guide (English)](docs/user-guide.en.md) · [Toolkit](#lingtu-e-commerce-toolkit) · [FAQ](docs/user-guide.en.md#20-faq) · [Privacy and data](#privacy-and-data) · [Data locations](#data-locations) · [Safe uninstall](#safe-uninstall) · [Build from source](#build-test-and-release) · [License](#license-and-independent-implementation)
 
 [Website](https://record.lttlt.top) · [Brand upgrade and data retention](docs/operations/brand-upgrade.md) (Chinese) · [2.6.3 prerelease notes](docs/releases/2.6.3.md) (Chinese)
 
@@ -38,6 +38,14 @@ Three steps for ordinary users:
 3. Launch the app from the Start menu and pick a recording folder in the first-run wizard. Excel can be skipped.
 
 Full steps for download, verification, first-run setup, scanning, phone pairing, label design, compatibility sync, migration, and uninstall are in the **[user guide (English)](docs/user-guide.en.md)**.
+
+## Lingtu E-commerce Toolkit
+
+- **This project: Lingtu Unpack Recorder** — Windows unpacking/packing recording and record management.
+- [E-commerce Purchase Order Export](https://github.com/907609732/lingtu-order-export/blob/master/docs/README.en.md) — buyer purchase order organization and Excel/CSV export.
+- [Lingtu AI E-commerce Customer Service](https://github.com/907609732/LTTLT-AI-Customer-Service) — store knowledge management and AI-assisted customer reception (Chinese only).
+
+These tools can be used as needed; see each project's documentation for features, versions, and licenses.
 
 ## Feature overview
 
