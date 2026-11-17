@@ -165,6 +165,10 @@ The wizard has five steps: **1 欢迎 (welcome) → 2 录像目录 (recording fo
 
 ## 8. Scan to start, finish, and switch parcels
 
+![Recording window](assets/desktop-2.6.3.png)
+
+*Isolated interface render; no camera was connected.*
+
 ### 8.1 The three everyday actions
 
 1. Confirm the mode at the bottom of the main window: **拆包** (unpacking) or **打包** (packing). The mode selects the `Unpacking` or `Packing` subfolder.
@@ -190,7 +194,7 @@ Open **系统设置 → 单号配置**:
 
 ### 8.4 Duration and voice
 
-Open **系统设置 → 启动与语音**:
+Open **系统设置 → 存储与数据 → 启动与语音**:
 
 1. **最长录像** in minutes: when the limit is reached the app asks whether to **继续录像** (continue, restarting the timer) or **停止并保存** (stop and save). The default is 5 minutes; it does not stop silently.
 2. **启动后立即显示实时相机** and **启用开始、停止和异常语音播报** can be toggled per site.
@@ -227,6 +231,10 @@ Open **系统设置 → 异常标签**:
 ---
 
 ## 10. History search, playback, and sync status
+
+![All records window](assets/desktop-history-2.6.3.png)
+
+*The records shown are examples.*
 
 1. At the bottom of "最近记录", click **查看全部记录** to open the "全部记录" window.
 2. Filters at the top:
@@ -351,6 +359,10 @@ The phone home page renders only two entry cards under "选择工作方式": **�
 ---
 
 ## 14. Thermal label designer
+
+![Label designer](assets/desktop-designer-2.6.3.png)
+
+*The label shown is an example.*
 
 1. Click **条码设计** at the top of the main window. **Recording continues**; switch back to **拆包录像** at any time.
 2. Toolbar: **新建**, **保存**, **导入 JSON**, **导出 JSON**, undo ↶, redo ↷, **复制**, **粘贴**, **删除**, **打印**.

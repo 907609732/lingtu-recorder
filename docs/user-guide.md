@@ -169,6 +169,10 @@ Get-FileHash -Algorithm SHA256 -LiteralPath .\EcommerceUnpackRecorder-win-Setup.
 
 ## 8. 扫码开始、结束与切换单号
 
+![拆包录像主界面](assets/desktop-2.6.3.png)
+
+*界面为隔离渲染，未连接相机。*
+
 ### 8.1 日常三步
 
 1. 在主界面底部确认当前模式：**拆包** 或 **打包**。模式决定录像落到 `Unpacking` 还是 `Packing` 子目录。
@@ -194,7 +198,7 @@ Get-FileHash -Algorithm SHA256 -LiteralPath .\EcommerceUnpackRecorder-win-Setup.
 
 ### 8.4 时长与语音
 
-打开 **系统设置 → 启动与语音**：
+打开 **系统设置 → 存储与数据 → 启动与语音**：
 
 1. **最长录像**（分钟）：到达上限时软件会弹窗询问 **继续录像** 还是 **停止并保存**，选择继续会重新计时；默认 5 分钟。它不会静默自动停止。
 2. **启动后立即显示实时相机**、**启用开始、停止和异常语音播报** 可按现场需要开关。
@@ -231,6 +235,10 @@ Get-FileHash -Algorithm SHA256 -LiteralPath .\EcommerceUnpackRecorder-win-Setup.
 ---
 
 ## 10. 历史检索、回放与同步状态
+
+![全部记录窗口](assets/desktop-history-2.6.3.png)
+
+*图中记录为示例数据。*
 
 1. 在主界面右侧“最近记录”底部点击 **查看全部记录**，打开“全部记录”窗口。
 2. 顶部检索条件：
@@ -355,6 +363,10 @@ Get-FileHash -Algorithm SHA256 -LiteralPath .\EcommerceUnpackRecorder-win-Setup.
 ---
 
 ## 14. 热敏条码设计器
+
+![条码设计界面](assets/desktop-designer-2.6.3.png)
+
+*图中标签为示例。*
 
 1. 在主界面顶部点击 **条码设计**。**录像不会中断**，可以随时切回 **拆包录像**。
 2. 顶部工具栏：**新建**、**保存**、**导入 JSON**、**导出 JSON**、撤销 ↶、重做 ↷、**复制**、**粘贴**、**删除**、**打印**。
