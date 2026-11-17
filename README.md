@@ -2,7 +2,13 @@
 
 **简体中文** | [English](README.en.md)
 
-一款 Windows 拆包、打包录像软件。扫码记录每个包裹的处理过程，需要时可以查找录像、同步 Excel，或用手机辅助扫码。
+<p align="center">
+  <img src="docs/assets/logo.png" width="180" alt="灵兔拆包智录 Logo">
+</p>
+
+这是一个面向中小商家的免费开源 Windows 拆包/打包录像、手机协同与数据同步系统。它不会修改 HIK SCAN，也不包含海康的源代码、商标或专有资源。
+
+官网：[record.lttlt.top](https://record.lttlt.top) · [品牌升级与数据保留](docs/operations/brand-upgrade.md) · [2.6.3 预发布说明](docs/releases/2.6.3.md)
 
 > 当前 **2.6.3 属于预发布（Prerelease）**，Windows 安装器尚未取得代码签名，首次运行可能出现 SmartScreen 提示。
 

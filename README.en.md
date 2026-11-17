@@ -2,7 +2,13 @@
 
 [简体中文](README.md) | **English**
 
-A Windows app for recording parcel unpacking and packing. Scan each parcel, find its recording later, sync records to Excel, or use an Android phone as a scanner.
+<p align="center">
+  <img src="docs/assets/logo.png" width="180" alt="Lingtu Unpack Recorder logo">
+</p>
+
+Lingtu Unpack Recorder is a free, open-source Windows system for recording parcel unpacking and packing, working with an Android phone, and synchronizing data. It does not modify HIK SCAN or contain Hikvision source code, trademarks, or proprietary assets.
+
+[Website](https://record.lttlt.top) · [Brand upgrade and data retention](docs/operations/brand-upgrade.md) (Chinese) · [2.6.3 prerelease notes](docs/releases/2.6.3.md) (Chinese)
 
 > **2.6.3 is a prerelease.** The Windows installer is not code-signed yet, so SmartScreen may warn on first run.
 
