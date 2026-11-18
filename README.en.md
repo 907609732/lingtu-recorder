@@ -46,6 +46,7 @@ Lingtu Unpack Recorder is a free, open-source Windows system for recording parce
 
 - **Excel / WPS sync:** choose or generate a workbook under 系统设置 → 存储与数据 (settings → storage and data). If the file is in use, the app waits and retries.
 - **Phone companion:** use an Android phone as a scanner or camera. Connect both devices to the same LAN and pair under 系统设置 → 手机协同 (settings → phone companion).
+- **Local agent interface (source development branch):** MCP + CLI can query records/tags, set notes, add/remove tags and retry the Excel queue. Local stdio/loopback only, no recording control; published 2.6.3 does not include it. See the [integration guide](docs/agent/README.en.md).
 
 ## Download and install
 
@@ -77,6 +78,7 @@ Choose the tools you need and see each project for details.
 ## Guides, privacy, and license
 
 - [User guide (English)](docs/user-guide.en.md): scanning, cameras, phone pairing, label design, migration, uninstall, troubleshooting.
+- [Local agent MCP + CLI integration](docs/agent/README.en.md): the eight source-branch tools, JSON output, exit codes and scope limits.
 - [Privacy policy](docs/PRIVACY.md) · [Terms](docs/TERMS.md) · [Security and vulnerability disclosure](SECURITY.md) — these documents are currently in Chinese.
 - [MIT License](LICENSE) · [Third-party notices](THIRD_PARTY_NOTICES.md)
 

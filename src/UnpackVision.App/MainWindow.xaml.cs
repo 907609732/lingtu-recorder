@@ -40,6 +40,7 @@ public partial class MainWindow : Window, ICameraConfigurationPreviewHost
             throw new InvalidOperationException("正在录像、启动或保存时不能卸载");
         }
         await FlushIssueNoteAsync();
+        await StopAgentApiAsync();
         await StationHostConnection.StopAsync(_lifetime.Token);
     }
     private static readonly Brush CameraReadyBackground = CreateFrozenBrush(232, 248, 239);
@@ -147,8 +148,13 @@ public partial class MainWindow : Window, ICameraConfigurationPreviewHost
 
             _rawScanner = new RawInputScannerCapture(this, () => _settings.Scanner);
             _rawScanner.BarcodeScanned += RawScanner_OnBarcodeScanned;
-            _syncDispatcher = new SyncDispatcher(_repository, [new ExcelConnector(excelOptions)], new SystemClock());
+            _syncDispatcher = new SyncDispatcher(
+                _repository,
+                [new ExcelConnector(excelOptions)],
+                new SystemClock(),
+                _recordMutationGate);
             _ = RunSyncLoopAsync(_lifetime.Token);
+            await StartAgentApiAsync();
 
             _stationStateTimer.Start();
             await PollStationStateAsync();
@@ -272,6 +278,7 @@ public partial class MainWindow : Window, ICameraConfigurationPreviewHost
 
     private void ApplyResult(ScanResult result)
     {
+        UpdateAgentRuntime();
         FooterText.Text = result.Message;
         switch (result.Action)
         {
@@ -993,8 +1000,18 @@ public partial class MainWindow : Window, ICameraConfigurationPreviewHost
     {
         if (_repository is null) return;
         var records = await _repository.QueryAsync(limit: 500, cancellationToken: cancellationToken);
-        foreach (var record in records.Where(item => item.State == RecordingState.Completed && !string.IsNullOrWhiteSpace(item.VideoPath)))
+        foreach (var candidate in records.Where(item =>
+                     item.State == RecordingState.Completed && !string.IsNullOrWhiteSpace(item.VideoPath)))
         {
+            using var lease = await _recordMutationGate.EnterAsync(cancellationToken);
+            // Re-read after taking the mutation gate. A record snapshot taken
+            // before an agent note/tag write must never be written back whole.
+            var record = await _repository.GetAsync(candidate.Id, cancellationToken);
+            if (record is not { State: RecordingState.Completed } ||
+                string.IsNullOrWhiteSpace(record.VideoPath))
+            {
+                continue;
+            }
             var key = $"video-rename:{record.Id:D}";
             if (string.IsNullOrWhiteSpace(await _repository.GetMetadataAsync(key, cancellationToken))) continue;
             try
@@ -1307,8 +1324,18 @@ public partial class MainWindow : Window, ICameraConfigurationPreviewHost
     {
         if (_repository is not null)
         {
-            var history = new HistoryWindow(_repository, _settings) { Owner = this };
-            history.Closed += async (_, _) => await RefreshRecentAsync();
+            if (_historyWindow is { IsLoaded: true } existing)
+            {
+                existing.Activate();
+                return;
+            }
+            var history = new HistoryWindow(_repository, _settings, _recordMutationGate) { Owner = this };
+            _historyWindow = history;
+            history.Closed += async (_, _) =>
+            {
+                _historyWindow = null;
+                await RefreshRecentAsync();
+            };
             history.Show();
         }
         ScannerInput.Focus();
@@ -1365,7 +1392,11 @@ public partial class MainWindow : Window, ICameraConfigurationPreviewHost
         _storageOptions.MaximumRecordingMinutes = _settings.MaximumRecordingMinutes;
         _coordinator?.UpdateScannerProfile(_settings.Scanner);
         RebuildStationRouter();
-        _syncDispatcher = new SyncDispatcher(_repository!, [new ExcelConnector(CreateExcelOptions())], new SystemClock());
+        _syncDispatcher = new SyncDispatcher(
+            _repository!,
+            [new ExcelConnector(CreateExcelOptions())],
+            new SystemClock(),
+            _recordMutationGate);
         if (string.IsNullOrWhiteSpace(previousExcelPath) &&
             !string.IsNullOrWhiteSpace(_settings.ExcelWorkbookPath) &&
             MessageBox.Show(
@@ -1831,6 +1862,7 @@ public partial class MainWindow : Window, ICameraConfigurationPreviewHost
         ApplyWorkflowVisuals();
         QuickIssueTagsControl.ItemsSource = _settings.IssueTags.Where(item => item.Enabled).OrderBy(item => item.SortOrder).ToArray();
         LabelDesigner.ConfigureIssueTags(_settings.IssueTags);
+        UpdateAgentTagCatalog();
     }
 
     private CameraProfile SelectedCameraProfile() => _settings.CameraRig.EnabledCameras
@@ -1979,6 +2011,7 @@ public partial class MainWindow : Window, ICameraConfigurationPreviewHost
         {
             await _desktopCommandListener.DisposeAsync();
         }
+        await StopAgentApiAsync();
         _lifetime.Cancel();
         _rawScanner?.Dispose();
         if (_recordingBackend is not null)

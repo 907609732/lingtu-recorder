@@ -1,6 +1,6 @@
-# Third-party components for 2.5.2
+# Third-party components for 2.6.3
 
-The following components are used or fetched by the 2.5.2 prerelease branch. Their source code is not copied into this repository unless the upstream package itself is restored by the standard build tool.
+The following components are used or fetched by the 2.6.3 development branch. Their source code is not copied into this repository unless the upstream package itself is restored by the standard build tool.
 
 | Component | Version | License | Purpose | Source |
 | --- | --- | --- | --- | --- |
@@ -9,6 +9,10 @@ The following components are used or fetched by the 2.5.2 prerelease branch. The
 | MediaMTX | 1.18.2 | MIT | RTSP, WebRTC and HLS media relay | https://github.com/bluenviron/mediamtx |
 | Makaretu.Dns.Multicast | 0.27.0 | MIT | Standard mDNS/DNS-SD station discovery on local and tethered networks | https://github.com/richardschneider/net-mdns |
 | Velopack | 1.2.0 | MIT | Windows per-user installer and GitHub Release updates | https://github.com/velopack/velopack |
+| ModelContextProtocol | 2.4.0 | Apache-2.0 | Official C# MCP stdio server, tools and client transport for the local agent | https://github.com/modelcontextprotocol/csharp-sdk |
+| ModelContextProtocol.Core | 2.4.0 | Apache-2.0 | Official MCP protocol and client core used by the Agent process | https://github.com/modelcontextprotocol/csharp-sdk |
+| System.CommandLine | 2.0.15 | MIT | CLI parsing for the local Agent | https://github.com/dotnet/command-line-api |
+| Microsoft.Extensions.Hosting and Microsoft.Extensions.* | 10.0.0 / 10.0.14; System.Diagnostics.EventLog 10.0.0 | MIT | Hosting, configuration, logging and dependency injection for the Agent process | https://github.com/dotnet/runtime |
 | hikvision-tooling | 1.0.43 (`afa00e3`) | MIT, with bundled dependency notices | Complete upstream CLI packaged as an optional, isolated helper; the application invokes only read-only SADP discovery | https://github.com/cameronnewman/hikvision-tooling |
 | Serilog | 4.4.0 | Apache-2.0 | Structured local diagnostic logging | https://github.com/serilog/serilog |
 | Serilog.Sinks.File | 7.0.0 | Apache-2.0 | Size- and date-rolled diagnostic log files | https://github.com/serilog/serilog-sinks-file |
@@ -48,3 +52,12 @@ FFmpeg is not copied merely because `ffmpeg.exe` exists on a developer computer.
 explicitly supplied 8.1.2 binary must pass `-version` metadata inspection and is rejected
 when `--enable-gpl` or `--enable-nonfree` is present. In particular, the common Gyan
 "full_build" distribution is intentionally excluded from product redistribution.
+
+The Agent license facts above were read from the restored package `.nuspec` metadata:
+`ModelContextProtocol` and `ModelContextProtocol.Core` declare `Apache-2.0`;
+`System.CommandLine` and the `Microsoft.Extensions.*` / `System.Diagnostics.EventLog`
+packages declare `MIT`. The standard license texts are kept under
+`licenses/modelcontextprotocol/2.4.0/` and `licenses/system-commandline/2.0.15/`.
+`scripts/publish.ps1` copies them to `App/Agent/LICENSES/` together with this notice.
+The Agent does not embed the compatibility service or any camera, recording, Excel,
+pairing or shell capability.

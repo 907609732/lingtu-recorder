@@ -39,6 +39,14 @@ Standard ONVIF and the optional Hikvision-compatible SADP adapter are isolated b
 same Core port; see [ADR 0010](decisions/0010-local-network-camera-discovery.md) before
 changing multicast behavior, third-party discovery tooling, or result filtering.
 
+The local agent interface is an optional desktop edge, not a second product host. The WPF
+app starts an authenticated random loopback listener only after repository/sync
+initialization; the separate `UnpackVision.Agent` process hosts the official MCP stdio server
+and CLI and never starts the desktop or compatibility service. Both entry points share
+Application record automation and the loopback client contract. See
+[the agent integration docs](../agent/README.md) before changing its tools, connection file,
+write policy or transport.
+
 ## Context rule
 
 For a normal change, load this index, the relevant module entry, the nearest `AGENTS.md`, the public interfaces, the implementation being changed, and its tests. Do not load every host and adapter unless the change crosses those boundaries.

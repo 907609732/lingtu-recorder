@@ -9,6 +9,8 @@
     <ProjectReference Include="../../src/UnpackVision.Core/UnpackVision.Core.csproj" />
     <ProjectReference Include="../../src/UnpackVision.Infrastructure/UnpackVision.Infrastructure.csproj" />
     <ProjectReference Include="../../src/UnpackVision.App/UnpackVision.App.csproj" />
+    <ProjectReference Include="../../src/UnpackVision.Agent/UnpackVision.Agent.csproj" />
+    <ProjectReference Include="../../src/UnpackVision.Agent.Shared/UnpackVision.Agent.Shared.csproj" />
     <ProjectReference Include="../../src/UnpackVision.StationHost/UnpackVision.StationHost.csproj" />
     <ProjectReference Include="../../src/UnpackVision.Service/UnpackVision.Service.csproj" />
     <ProjectReference Include="../../scripts/acceptance/UnpackVision.Acceptance.csproj" />
@@ -126,5 +128,22 @@
     <None Include="../../src/UnpackVision.App/Assets/telemetry-endpoint.txt"
           Link="TestData/telemetry-endpoint.txt"
           CopyToOutputDirectory="PreserveNewest" />
+    <None Include="../../src/UnpackVision.Agent/UnpackVision.Agent.csproj"
+          Link="TestData/UnpackVision.Agent.csproj"
+          CopyToOutputDirectory="PreserveNewest" />
+    <None Include="../../docs/agent/README.md"
+          Link="TestData/agent-README.md"
+          CopyToOutputDirectory="PreserveNewest" />
+    <None Include="../../docs/agent/README.en.md"
+          Link="TestData/agent-README.en.md"
+          CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
+  <Target Name="CopyAgentProcessForE2E" AfterTargets="Build">
+    <ItemGroup>
+      <AgentProcessFiles Include="../../src/UnpackVision.Agent/bin/$(Configuration)/net10.0/**/*" />
+    </ItemGroup>
+    <Copy SourceFiles="@(AgentProcessFiles)"
+          DestinationFiles="@(AgentProcessFiles->'$(OutDir)agent/%(RecursiveDir)%(Filename)%(Extension)')"
+          SkipUnchangedFiles="true" />
+  </Target>
 </Project>

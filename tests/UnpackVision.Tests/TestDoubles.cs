@@ -110,6 +110,9 @@ internal sealed class InMemoryRepository : IScanRecordRepository
     public List<ScanRecord> Records { get; } = [];
     public List<SyncDelivery> Deliveries { get; } = [];
     public Dictionary<string, string> Metadata { get; } = new(StringComparer.Ordinal);
+    public Func<Guid, CancellationToken, Task<ScanRecord?>>? GetAsyncOverride { get; set; }
+    public Func<Guid, string, DateTimeOffset, CancellationToken, Task>? UpdateNoteOverride { get; set; }
+    public bool FailNextEnqueue { get; set; }
 
     public Task InitializeAsync(CancellationToken cancellationToken = default) => Task.CompletedTask;
     public Task AddAsync(ScanRecord record, CancellationToken cancellationToken = default)
@@ -148,7 +151,9 @@ internal sealed class InMemoryRepository : IScanRecordRepository
         return Task.CompletedTask;
     }
     public Task<ScanRecord?> GetAsync(Guid id, CancellationToken cancellationToken = default) =>
-        Task.FromResult(Records.FirstOrDefault(record => record.Id == id));
+        GetAsyncOverride is { } getOverride
+            ? getOverride(id, cancellationToken)
+            : Task.FromResult(Records.FirstOrDefault(record => record.Id == id));
     public Task<ScanRecord?> FindFirstCompletedAsync(string trackingNo, CancellationToken cancellationToken = default) =>
         Task.FromResult(Records.FirstOrDefault(record =>
             record.TrackingNo == trackingNo && record.State is RecordingState.Completed or RecordingState.Collected or RecordingState.Imported));
@@ -230,12 +235,20 @@ internal sealed class InMemoryRepository : IScanRecordRepository
         }
         return Task.FromResult(assignment);
     }
-    public Task UpdateNoteAsync(Guid recordId, string note, DateTimeOffset updatedAt, CancellationToken cancellationToken = default)
+    public async Task UpdateNoteAsync(
+        Guid recordId,
+        string note,
+        DateTimeOffset updatedAt,
+        CancellationToken cancellationToken = default)
     {
+        cancellationToken.ThrowIfCancellationRequested();
+        if (UpdateNoteOverride is { } updateOverride)
+        {
+            await updateOverride(recordId, note, updatedAt, cancellationToken);
+        }
         var record = Records.Single(item => item.Id == recordId);
         record.Note = note.Trim();
         record.NoteUpdatedAt = updatedAt;
-        return Task.CompletedTask;
     }
     public Task<IReadOnlyList<RecordTagAssignment>> GetTagsAsync(Guid recordId, bool includeRemoved = false, CancellationToken cancellationToken = default)
     {
@@ -244,11 +257,34 @@ internal sealed class InMemoryRepository : IScanRecordRepository
     }
     public Task EnqueueDeliveryAsync(Guid recordId, string connectorId, CancellationToken cancellationToken = default)
     {
-        Deliveries.Add(new SyncDelivery { RecordId = recordId, ConnectorId = connectorId });
+        cancellationToken.ThrowIfCancellationRequested();
+        if (FailNextEnqueue)
+        {
+            FailNextEnqueue = false;
+            throw new IOException("simulated enqueue failure");
+        }
+        var existing = Deliveries.FirstOrDefault(delivery =>
+            delivery.RecordId == recordId &&
+            string.Equals(delivery.ConnectorId, connectorId, StringComparison.OrdinalIgnoreCase));
+        if (existing is null)
+        {
+            Deliveries.Add(new SyncDelivery { RecordId = recordId, ConnectorId = connectorId });
+        }
+        else
+        {
+            existing.Status = SyncStatus.Pending;
+            existing.LastError = null;
+            existing.NextRetryAt = DateTimeOffset.MinValue;
+        }
         return Task.CompletedTask;
     }
     public Task<IReadOnlyList<SyncDelivery>> GetDueDeliveriesAsync(int limit, DateTimeOffset now, CancellationToken cancellationToken = default) =>
-        Task.FromResult<IReadOnlyList<SyncDelivery>>(Deliveries.Take(limit).ToList());
+        Task.FromResult<IReadOnlyList<SyncDelivery>>(Deliveries
+            .Where(delivery =>
+                delivery.Status is SyncStatus.Pending or SyncStatus.Failed &&
+                delivery.NextRetryAt <= now)
+            .Take(limit)
+            .ToList());
     public Task<SyncDelivery?> GetDeliveryAsync(Guid recordId, string connectorId, CancellationToken cancellationToken = default) =>
         Task.FromResult(Deliveries.LastOrDefault(delivery => delivery.RecordId == recordId && delivery.ConnectorId == connectorId));
     public Task<IReadOnlyDictionary<Guid, SyncDelivery>> GetLatestDeliveriesAsync(
@@ -263,10 +299,57 @@ internal sealed class InMemoryRepository : IScanRecordRepository
             .ToDictionary(group => group.Key, group => group.Last());
         return Task.FromResult(result);
     }
-    public Task<bool> TryClaimDeliveryAsync(Guid deliveryId, CancellationToken cancellationToken = default) => Task.FromResult(true);
-    public Task CompleteDeliveryAsync(Guid deliveryId, string? externalId, CancellationToken cancellationToken = default) => Task.CompletedTask;
-    public Task FailDeliveryAsync(Guid deliveryId, string error, DateTimeOffset nextRetryAt, CancellationToken cancellationToken = default) => Task.CompletedTask;
-    public Task RetryConnectorAsync(string connectorId, CancellationToken cancellationToken = default) => Task.CompletedTask;
+    public Task<bool> TryClaimDeliveryAsync(Guid deliveryId, CancellationToken cancellationToken = default)
+    {
+        var delivery = Deliveries.FirstOrDefault(item => item.Id == deliveryId);
+        if (delivery is null || delivery.Status is not (SyncStatus.Pending or SyncStatus.Failed))
+        {
+            return Task.FromResult(false);
+        }
+        delivery.Status = SyncStatus.Processing;
+        delivery.AttemptCount++;
+        return Task.FromResult(true);
+    }
+
+    public Task CompleteDeliveryAsync(Guid deliveryId, string? externalId, CancellationToken cancellationToken = default)
+    {
+        var delivery = Deliveries.FirstOrDefault(item => item.Id == deliveryId);
+        if (delivery is not null)
+        {
+            delivery.Status = SyncStatus.Succeeded;
+            delivery.ExternalId = externalId;
+            delivery.NextRetryAt = DateTimeOffset.MaxValue;
+        }
+        return Task.CompletedTask;
+    }
+
+    public Task FailDeliveryAsync(
+        Guid deliveryId,
+        string error,
+        DateTimeOffset nextRetryAt,
+        CancellationToken cancellationToken = default)
+    {
+        var delivery = Deliveries.FirstOrDefault(item => item.Id == deliveryId);
+        if (delivery is not null)
+        {
+            delivery.Status = SyncStatus.Failed;
+            delivery.LastError = error;
+            delivery.NextRetryAt = nextRetryAt;
+        }
+        return Task.CompletedTask;
+    }
+    public Task RetryConnectorAsync(string connectorId, CancellationToken cancellationToken = default)
+    {
+        foreach (var delivery in Deliveries.Where(delivery =>
+                     string.Equals(delivery.ConnectorId, connectorId, StringComparison.OrdinalIgnoreCase) &&
+                     delivery.Status != SyncStatus.Succeeded))
+        {
+            delivery.Status = SyncStatus.Pending;
+            delivery.LastError = null;
+            delivery.NextRetryAt = DateTimeOffset.MinValue;
+        }
+        return Task.CompletedTask;
+    }
     public Task<string?> GetMetadataAsync(string key, CancellationToken cancellationToken = default) =>
         Task.FromResult(Metadata.GetValueOrDefault(key));
     public Task SetMetadataAsync(string key, string value, CancellationToken cancellationToken = default)

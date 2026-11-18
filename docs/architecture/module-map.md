@@ -14,6 +14,7 @@
 | Updates | Update manifest semantics and consent boundaries | Velopack/Android installer UI | Desktop and Android update tests |
 | Workspace | Workspace selection, template intent, portable catalog and recovery rules | Dialog layout or OpenXML mechanics | Workspace and telemetry tests |
 | Diagnostics | Local structured logging, retention, redaction and host logger bridge | Business payloads, credentials or remote telemetry | File creation and redaction tests |
+| Agent interface | Authenticated loopback HTTP edge, connection-file contract, official MCP stdio/CLI adapters, bounded record automation use cases | Recording control, record deletion, device pairing, shell/file reads, direct SQLite or Excel writes | Application automation, host auth/origin/size/lifecycle, real stdio MCP and CLI subprocess tests |
 
 ## Dependency rules
 
@@ -22,4 +23,5 @@
 - Infrastructure depends on Core, never on a host.
 - Diagnostics is an Infrastructure adapter initialized only by executable composition roots.
 - Hosts may reference Application, Core, and Infrastructure; concrete adapter construction stays at their composition roots.
+- The Agent CLI/MCP process references the shared connection/client boundary. The desktop host references Application for automation rules; the shared client boundary does not construct repositories or sync adapters.
 - Android is a separate client and communicates only through documented station contracts.

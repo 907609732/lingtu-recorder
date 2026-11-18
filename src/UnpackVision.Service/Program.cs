@@ -47,7 +47,7 @@ builder.Services.AddSingleton<IScanRecordRepository>(services =>
         storageOptions));
 builder.Services.AddSingleton<ExcelConnector>();
 builder.Services.AddSingleton<ISyncConnector>(services => services.GetRequiredService<ExcelConnector>());
-builder.Services.AddSingleton<SyncDispatcher>();
+builder.Services.AddSyncDispatcherServices();
 builder.Services.AddSingleton<HikRecordingImporter>();
 builder.Services.AddSingleton<IImageScanService, OpenCvImageScanService>();
 builder.Services.AddSingleton<IBarcodeRecognitionService, ZxingBarcodeRecognitionService>();

@@ -20,6 +20,7 @@ public partial class HistoryWindow : Window
     private const int MaximumSourceRowsPerLoad = 500;
     private readonly IScanRecordRepository _repository;
     private readonly LocalSettings _settings;
+    private readonly IRecordMutationGate _recordMutationGate;
     private readonly ObservableCollection<RecentRecordingItem> _items = [];
     private readonly CancellationTokenSource _lifetime = new();
     private readonly object _thumbnailLoadsSync = new();
@@ -27,14 +28,19 @@ public partial class HistoryWindow : Window
     private int _nextOffset;
     private bool _hasMore = true;
     private bool _loading;
+    private bool _refreshAfterLoad;
     private bool _deleting;
     private bool _closed;
 
-    public HistoryWindow(IScanRecordRepository repository, LocalSettings settings)
+    public HistoryWindow(
+        IScanRecordRepository repository,
+        LocalSettings settings,
+        IRecordMutationGate? recordMutationGate = null)
     {
         InitializeComponent();
         _repository = repository;
         _settings = settings;
+        _recordMutationGate = recordMutationGate ?? new RecordMutationGate();
         HistoryGrid.ItemsSource = _items;
         TagFilterSelector.ItemsSource = new[] { new IssueTagDefinition { Id = string.Empty, Name = "全部标签" } }
             .Concat(settings.IssueTags.Where(item => item.Enabled).OrderBy(item => item.SortOrder)).ToArray();
@@ -48,6 +54,20 @@ public partial class HistoryWindow : Window
             _lifetime.Cancel();
             CancelThumbnailLoads();
         };
+    }
+
+    public Task RefreshFromExternalChangeAsync()
+    {
+        if (_closed)
+        {
+            return Task.CompletedTask;
+        }
+        if (_loading)
+        {
+            _refreshAfterLoad = true;
+            return Task.CompletedTask;
+        }
+        return LoadAsync(reset: true);
     }
 
     private async Task LoadAsync(bool reset)
@@ -151,6 +171,11 @@ public partial class HistoryWindow : Window
             _loading = false;
             SearchButton.IsEnabled = !_closed;
             LoadMoreButton.IsEnabled = !_closed && _hasMore;
+            if (_refreshAfterLoad && !_closed)
+            {
+                _refreshAfterLoad = false;
+                await LoadAsync(reset: true);
+            }
         }
     }
 
@@ -250,39 +275,57 @@ public partial class HistoryWindow : Window
         if (dialog.ShowDialog() != true) return;
         try
         {
-            var now = DateTimeOffset.Now;
-            var active = (await _repository.GetTagsAsync(item.Record.Id)).ToArray();
-            var selectedIds = dialog.Tags.Where(tag => tag.Selected).Select(tag => tag.Definition.Id).ToHashSet(StringComparer.OrdinalIgnoreCase);
-            foreach (var assignment in active.Where(tag => !selectedIds.Contains(tag.TagId)))
+            using (var lease = await _recordMutationGate.EnterAsync(_lifetime.Token))
             {
-                await _repository.RemoveTagAsync(item.Record.Id, assignment.Id, now);
-            }
-            foreach (var tag in dialog.Tags.Where(tag => tag.Selected && active.All(assignment => !string.Equals(assignment.TagId, tag.Definition.Id, StringComparison.OrdinalIgnoreCase))))
-            {
-                await _repository.AddTagAsync(item.Record.Id, tag.Definition, now, "history");
-            }
-            await _repository.UpdateNoteAsync(item.Record.Id, dialog.Note, now);
-            var updated = await _repository.GetAsync(item.Record.Id) ?? throw new InvalidOperationException("记录不存在。");
-            try
-            {
-                var renamed = RecordingFileRenameService.TryRenameLocalRecording(updated, _settings.RecordingRoot);
-                if (!string.IsNullOrWhiteSpace(renamed) && !string.Equals(renamed, updated.VideoPath, StringComparison.OrdinalIgnoreCase))
+                var now = DateTimeOffset.Now;
+                var active = (await _repository.GetTagsAsync(item.Record.Id)).ToArray();
+                var selectedIds = dialog.Tags
+                    .Where(tag => tag.Selected)
+                    .Select(tag => tag.Definition.Id)
+                    .ToHashSet(StringComparer.OrdinalIgnoreCase);
+                foreach (var assignment in active.Where(tag => !selectedIds.Contains(tag.TagId)))
                 {
-                    updated.VideoPath = renamed;
-                    updated.UpdatedAt = now;
-                    await _repository.UpdateAsync(updated);
+                    await _repository.RemoveTagAsync(item.Record.Id, assignment.Id, now);
                 }
-                await _repository.SetMetadataAsync($"video-rename:{updated.Id:D}", string.Empty);
-            }
-            catch (IOException ex)
-            {
-                await _repository.SetMetadataAsync($"video-rename:{updated.Id:D}", ex.Message);
-            }
-            if (updated.State is RecordingState.Completed or RecordingState.Imported)
-            {
-                await _repository.EnqueueDeliveryAsync(updated.Id, "excel");
+                foreach (var tag in dialog.Tags.Where(tag =>
+                             tag.Selected &&
+                             active.All(assignment => !string.Equals(
+                                 assignment.TagId,
+                                 tag.Definition.Id,
+                                 StringComparison.OrdinalIgnoreCase))))
+                {
+                    await _repository.AddTagAsync(item.Record.Id, tag.Definition, now, "history");
+                }
+                await _repository.UpdateNoteAsync(item.Record.Id, dialog.Note, now);
+                var updated = await _repository.GetAsync(item.Record.Id)
+                    ?? throw new InvalidOperationException("记录不存在。");
+                try
+                {
+                    var renamed = RecordingFileRenameService.TryRenameLocalRecording(
+                        updated,
+                        _settings.RecordingRoot);
+                    if (!string.IsNullOrWhiteSpace(renamed) &&
+                        !string.Equals(renamed, updated.VideoPath, StringComparison.OrdinalIgnoreCase))
+                    {
+                        updated.VideoPath = renamed;
+                        updated.UpdatedAt = now;
+                        await _repository.UpdateAsync(updated);
+                    }
+                    await _repository.SetMetadataAsync($"video-rename:{updated.Id:D}", string.Empty);
+                }
+                catch (IOException ex)
+                {
+                    await _repository.SetMetadataAsync($"video-rename:{updated.Id:D}", ex.Message);
+                }
+                if (updated.State is RecordingState.Completed or RecordingState.Imported)
+                {
+                    await _repository.EnqueueDeliveryAsync(updated.Id, "excel");
+                }
             }
             await LoadAsync(reset: true);
+        }
+        catch (OperationCanceledException)
+        {
         }
         catch (Exception ex)
         {
@@ -292,7 +335,17 @@ public partial class HistoryWindow : Window
 
     private async void RetrySync_OnClick(object sender, RoutedEventArgs e)
     {
-        await _repository.RetryConnectorAsync("excel");
+        try
+        {
+            using (var lease = await _recordMutationGate.EnterAsync(_lifetime.Token))
+            {
+                await _repository.RetryConnectorAsync("excel");
+            }
+        }
+        catch (OperationCanceledException)
+        {
+            return;
+        }
         MessageBox.Show(this, "失败或等待中的 Excel 同步任务已重新排队。", "重新同步", MessageBoxButton.OK, MessageBoxImage.Information);
     }
 

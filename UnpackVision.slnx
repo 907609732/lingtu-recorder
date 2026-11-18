@@ -6,6 +6,8 @@
     <Project Path="src/UnpackVision.Service/UnpackVision.Service.csproj" />
     <Project Path="src/UnpackVision.StationHost/UnpackVision.StationHost.csproj" />
     <Project Path="src/UnpackVision.App/UnpackVision.App.csproj" />
+    <Project Path="src/UnpackVision.Agent.Shared/UnpackVision.Agent.Shared.csproj" />
+    <Project Path="src/UnpackVision.Agent/UnpackVision.Agent.csproj" />
   </Folder>
   <Folder Name="/tests/">
     <Project Path="tests/UnpackVision.Tests/UnpackVision.Tests.csproj" />

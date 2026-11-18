@@ -35,6 +35,12 @@ if (Test-Path -LiteralPath $appOutput) {
 & $dotnet publish (Join-Path $projectRoot 'src\UnpackVision.App\UnpackVision.App.csproj') -c Release -r $Runtime --self-contained true -o $appOutput
 if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
+# The local agent is a separate self-contained process so MCP clients can keep
+# it on PATH without loading WPF. It talks only to the already-running desktop.
+$agentOutput = Join-Path $appOutput 'Agent'
+& $dotnet publish (Join-Path $projectRoot 'src\UnpackVision.Agent\UnpackVision.Agent.csproj') -c Release -r $Runtime --self-contained true -o $agentOutput
+if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
 & $dotnet publish (Join-Path $projectRoot 'src\UnpackVision.StationHost\UnpackVision.StationHost.csproj') -c Release -r $Runtime --self-contained true -o $stationOutput
 if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
@@ -84,6 +90,11 @@ foreach ($sadpPackageFile in $sadpPackageFiles) {
 if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
 Copy-Item -LiteralPath (Join-Path $projectRoot 'THIRD_PARTY_NOTICES.md') -Destination $appOutput
+Copy-Item -LiteralPath (Join-Path $projectRoot 'THIRD_PARTY_NOTICES.md') -Destination $agentOutput
+$agentLicenses = Join-Path $agentOutput 'LICENSES'
+New-Item -ItemType Directory -Path $agentLicenses -Force | Out-Null
+Copy-Item -LiteralPath (Join-Path $projectRoot 'licenses\modelcontextprotocol\2.4.0\LICENSE-Apache-2.0.txt') -Destination $agentLicenses
+Copy-Item -LiteralPath (Join-Path $projectRoot 'licenses\system-commandline\2.0.15\LICENSE-MIT.txt') -Destination $agentLicenses
 $scriptOutput = Join-Path $appOutput 'Scripts'
 New-Item -ItemType Directory -Path $scriptOutput -Force | Out-Null
 Copy-Item `

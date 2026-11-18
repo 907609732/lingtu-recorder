@@ -7,15 +7,18 @@ public sealed class SyncDispatcher
     private readonly IScanRecordRepository _repository;
     private readonly IReadOnlyDictionary<string, ISyncConnector> _connectors;
     private readonly IClock _clock;
+    private readonly IRecordMutationGate _recordMutationGate;
 
     public SyncDispatcher(
         IScanRecordRepository repository,
         IEnumerable<ISyncConnector> connectors,
-        IClock clock)
+        IClock clock,
+        IRecordMutationGate recordMutationGate)
     {
         _repository = repository;
         _connectors = connectors.ToDictionary(connector => connector.Id, StringComparer.OrdinalIgnoreCase);
         _clock = clock;
+        _recordMutationGate = recordMutationGate;
     }
 
     public async Task<int> ProcessDueAsync(int limit = 20, CancellationToken cancellationToken = default)
@@ -25,6 +28,10 @@ public sealed class SyncDispatcher
         foreach (var delivery in deliveries)
         {
             cancellationToken.ThrowIfCancellationRequested();
+            // Keep claim -> latest record read -> workbook append -> complete
+            // serialized with agent note/tag writes and rename updates. Otherwise
+            // an old push can flip a newly enqueued Pending row back to Succeeded.
+            using var lease = await _recordMutationGate.EnterAsync(cancellationToken);
             if (!await _repository.TryClaimDeliveryAsync(delivery.Id, cancellationToken))
             {
                 continue;

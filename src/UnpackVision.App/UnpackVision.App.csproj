@@ -16,6 +16,8 @@
     <ProjectReference Include="../UnpackVision.Application/UnpackVision.Application.csproj" />
     <ProjectReference Include="../UnpackVision.Core/UnpackVision.Core.csproj" />
     <ProjectReference Include="../UnpackVision.Infrastructure/UnpackVision.Infrastructure.csproj" />
+    <ProjectReference Include="../UnpackVision.Agent.Shared/UnpackVision.Agent.Shared.csproj" />
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
     <PackageReference Include="System.Speech" Version="10.0.10" />
     <PackageReference Include="Velopack" Version="1.2.0" />
   </ItemGroup>
