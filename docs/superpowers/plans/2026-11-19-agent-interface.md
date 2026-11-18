@@ -13,7 +13,7 @@
 - [x] 3. 以官方 ModelContextProtocol 2.4.0、System.CommandLine 2.0.15（实际还原兼容后固定）实现共用客户端与 8 个 MCP 工具、对应 CLI 子命令和 schema/help。测试连接文件轮换、不可用、代理/重定向禁用、JSON 错误和字段校验。
 - [x] 4. 加入真实 stdio MCP/CLI 合成端到端验收；核对工具发现、查询/写入/入队及错误行为，隔离数据与日志。
 - [x] 5. 更新 solution、发布脚本、模块图、第三方许可、中英文接入说明与首页入口。确认 Agent 随发布目录交付，不发布新版安装包。
-- [ ] 6. Codex 独立审查 diff、执行专项与必需构建检查、检查打包文件和协议输出，修复问题后再整合 GitHub。
+- [x] 6. Codex 独立审查 diff、执行专项与必需构建检查、检查打包文件和协议输出，修复问题后再整合 GitHub。
 
 ## Verification evidence
 
@@ -24,7 +24,7 @@
 - First-round self-contained Agent publish and `App/Agent` layout smoke test: exit 0; CLI schema/help exit 0, offline get-status exit 2; published Agent E2E passed 6 tests. This round did not rerun publish/installer steps, per the follow-up instruction.
 - Second-round reviewer P1/P2 targeted verification: tests build exit 0; `FullyQualifiedName~Agent` 61 passed; `HistoryWindowUiTests|AgentServiceRegistrationTests` 2 passed; no current full-suite claim.
 - Detailed commands, failures and remaining limits are in `docs/parallel/agent-interface-20261119.md`.
-- Task 6 remains open because no GitHub integration/commit/push is allowed in this worktree and independent review/cloud validation is still pending.
+- Final Codex Debug verification: 430 main + 3 isolated WPF tests passed. GitHub run 44359051130 passed Release build, 430+3 tests, desktop publish-dependency checks and 7 published-process tests. The downloaded artifact passed the same 7 CLI/MCP process tests locally. No confirmed P1/P2 remains in review. See the handoff for exact commit, run and artifact hash.
 
 ## Review focus
 

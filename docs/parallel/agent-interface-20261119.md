@@ -2,7 +2,17 @@
 
 分支：`feature/agent-interface-20261119`  
 工作副本：`C:\Users\90760\.codex\worktrees\lingtu-ecosystem-20261117\lingtu-recorder`  
-状态：第一版源码实现与第二轮 reviewer P1/P2 修复完成；未提交、未推送、未运行发布/安装器、未改 Codex 配置。
+状态：源码实现、独立审查、本地全套与 GitHub Release 配置构建验收完成；未发布新安装包、未改 Codex MCP 配置。
+
+## Codex 最终验收
+
+- 最后修复：重复写入时不再把旧版本的 Succeeded 当作当前记录已同步；备注、加标签、移除标签的三个回归用例均先失败，再随修复通过。
+- 本机 `scripts/build.ps1 -Configuration Debug`：退出码 0，430 项主测试和 3 项独立 WPF 测试通过。
+- [GitHub Agent validation 44359051130](https://github.com/907609732/lingtu-recorder/actions/runs/44359051130)：提交 `92d2ef433876e139706943d7af13560625d37489`，Release 构建 0 警告/0 错误，430+3 测试及已发布目录中的 7 项 CLI/MCP 进程测试通过。
+- 同次构建检查自包含桌面输出含 Kestrel、Agent.Shared 和 Application 依赖；未执行安装器或硬件验收。
+- 下载该 run 的 `agent-win-x64-92d2ef433876e139706943d7af13560625d37489` 到本机，以 `UNPACKVISION_AGENT_EXE` 指向下载程序，7 项真实 CLI/MCP 进程测试再次通过。所有业务记录仍为合成数据。
+- 下载的 `UnpackVision.Agent.exe` SHA256：`77D865DF1E7022D72AB241F95441BC1D9DA8173176129E6E111C6C22940671CD`。
+- 官方 DeepSeek headless 后续会话退出码 0，最终事件 `reason.kind=completed`；独立审查没有剩余已确认 P1/P2。
 
 ## 交付范围
 
@@ -126,11 +136,10 @@ dotnet test tests\UnpackVision.Tests\UnpackVision.Tests.csproj --no-build `
 - gate 仅覆盖当前桌面进程；独立兼容 Service 同时直接写同一 SQLite 的跨进程一致性未解决（Service 自身使用独立 gate）。
 - 写备注/标签与 enqueue 仍不是同一个仓储事务/outbox；请求断开后的队列由独立 persistence CTS + 重试补建缓解，但进程崩溃窗口不能完全消除。文档已明确“queued != synced”。
 - 连接文件 token 依赖当前用户 LocalAppData 的 ACL/继承；同一用户恶意进程仍可读取。未新增 ACL 强化。
-- 未执行真实桌面、相机、录像、Excel、设备、安装器、发布或云端验证；所有测试使用合成临时数据。
-- 最终 full suite、云端 GitHub workflow 和独立 Codex 审查仍待 root 执行。
+- 未执行真实业务桌面、相机、录像、Excel、设备或安装器验收；所有测试使用合成临时数据。公开 `v2.6.3` 安装包没有被本次源码更新替换。
 
 ## 测试助手 / 环境
 
 - `tests/UnpackVision.Tests/AgentProcess.cs` 的 `ExecutablePath` 支持 `UNPACKVISION_AGENT_EXE`；未设置时退回已有 `agent/UnpackVision.Agent.exe`。该变量仅测试用。
 - 本轮未写 Codex MCP 配置；`codex mcp add --help` 仅核对语法。
-- 未提交、未推送、未 reset/clean；未触碰正式用户目录、数据库、录像、Excel 或相机。
+- 实现 worker 未提交或推送；最终源码与文档由 Codex 审查后整合。未 reset/clean，未触碰正式数据库、录像、Excel 或相机。
