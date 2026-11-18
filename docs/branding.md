@@ -1,5 +1,11 @@
 # 灵兔拆包智录品牌素材
 
+## 当前选择（2026-11-19）
+
+按用户要求去掉右下角灵兔角标，恢复浅蓝底、纸箱与摄像头原图。直接复用 `design/brand/UnpackVision-Logo-Apple-2026-Source.png`，保留原图透明度，不重新绘制主体。
+
+导出命令：`powershell -NoProfile -ExecutionPolicy Bypass -File scripts/generate-brand-assets.ps1 -Source design/brand/UnpackVision-Logo-Apple-2026-Source.png`。桌面 PNG/ICO、Android 各密度图标与自适应前景、README Logo 使用同一来源。下方带徽章的选择与导出数据为历史记录，已被本节替代。已安装软件和已发布包不会因源码素材替换而自动变化。
+
 ## 2026-11-01 新品牌参考更新
 
 采用用户本次提供的新版跃兔图形，保留浅蓝底、纸箱和摄像头主体，在右下角增加白色圆角徽章。软件布局、配色与业务内容不变。下方 2.6.0 记录为历史记录，不代表本次素材。

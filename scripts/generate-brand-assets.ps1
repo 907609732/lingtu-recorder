@@ -268,7 +268,7 @@ try {
     }
     $foregroundPath = Join-Path $androidResources 'drawable-nodpi\ic_launcher_foreground.png'
     # A 186 px square fits inside Android's central 66/108 safe circle at 432 px.
-    # Keep the complete existing rounded-square outline and the corner brand badge.
+    # Keep the complete selected artwork inside the launcher safe area.
     Save-ResizedPng $master 432 $foregroundPath ([System.Drawing.Color]::Transparent) (186.0 / 432.0)
     $foreground = [System.Drawing.Bitmap]::new($foregroundPath)
     try {
