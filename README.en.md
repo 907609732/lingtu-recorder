@@ -6,13 +6,31 @@
   <img src="docs/assets/logo.png" width="180" alt="Lingtu Unpack Recorder logo">
 </p>
 
-Lingtu Unpack Recorder is a free, open-source Windows system for recording parcel unpacking and packing, working with an Android phone, and synchronizing data. It does not modify HIK SCAN or contain Hikvision source code, trademarks, or proprietary assets.
+**AI-assisted logistics traceability and parcel evidence software for e-commerce sellers.**
+
+Link tracking numbers to parcel-handling videos, photos and exception notes. Record unpacking, returned-parcel inspection and packing; look up the evidence when checking missing items, wrong shipments, damage or after-sales disputes.
+
+- **Trace parcels:** search by tracking number, date or exception tag and replay the handling process.
+- **Keep evidence:** scan to record, capture photos, add exception tags and organize records with Excel / WPS.
+- **Work with AI agents:** MCP / CLI can query records, edit notes and tags, and retry synchronization. Available in current source; the public v2.6.3 installer does not include it yet.
 
 [Website](https://record.lttlt.top) · [Brand upgrade and data retention](docs/operations/brand-upgrade.md) (Chinese) · [2.6.3 prerelease notes](docs/releases/2.6.3.md) (Chinese)
 
 > **2.6.3 is a prerelease.** The Windows installer is not code-signed yet, so SmartScreen may warn on first run.
 
 **Quick links:** [Interface and features](#interface-and-core-features) · [Download and install](#download-and-install) · [Four-step start](#four-step-quick-start) · [User guide](docs/user-guide.en.md) · [FAQ](docs/user-guide.en.md#20-faq) · [License](#guides-privacy-and-license)
+
+## Lingtu AI E-commerce Traceability Suite
+
+Three complementary apps cover purchase records, parcel evidence and AI-assisted customer service.
+
+| Logo | Project and purpose |
+| :---: | :--- |
+| <a href="https://github.com/907609732/lingtu-recorder/blob/main/README.en.md"><img src="https://raw.githubusercontent.com/907609732/lingtu-recorder/main/docs/assets/logo.png" width="96" height="96" alt="Lingtu Unpack Recorder Logo"></a> | **[This project: Lingtu Unpack Recorder](https://github.com/907609732/lingtu-recorder/blob/main/README.en.md)**<br>Parcel evidence: find unpacking/packing videos, photos and exception notes by tracking number. |
+| <a href="https://github.com/907609732/lingtu-order-export/blob/master/docs/README.en.md"><img src="https://raw.githubusercontent.com/907609732/lingtu-order-export/master/build/icon.png" width="96" height="96" alt="E-commerce Purchase Order Export Logo"></a> | **[E-commerce Purchase Order Export](https://github.com/907609732/lingtu-order-export/blob/master/docs/README.en.md)**<br>Purchase traceability: organize buyer orders, product details and logistics; export Excel/CSV. |
+| <a href="https://github.com/907609732/LTTLT-AI-Customer-Service/blob/main/README.en.md"><img src="https://raw.githubusercontent.com/907609732/LTTLT-AI-Customer-Service/main/src/assets/lingtu-ai-icon.png" width="96" height="96" alt="Lingtu AI E-commerce Customer Service Logo"></a> | **[Lingtu AI E-commerce Customer Service](https://github.com/907609732/LTTLT-AI-Customer-Service/blob/main/README.en.md)**<br>After-sales support: store/product knowledge and AI-assisted customer replies. |
+
+Use the apps together to review purchases, parcel handling and after-sales cases. They are installed separately and keep their own data; records are not automatically shared.
 
 ## Interface and core features
 
@@ -65,17 +83,9 @@ The installer does not require the .NET SDK. SHA256 checksums are available on t
 
 Optional anonymous usage statistics are checked by default. Clear the checkbox or turn them off later under 系统设置 → 关于 (settings → about).
 
-## Lingtu e-commerce toolkit
-
-| Logo | Project and purpose |
-| :---: | :--- |
-| <a href="https://github.com/907609732/lingtu-recorder/blob/main/README.en.md"><img src="https://raw.githubusercontent.com/907609732/lingtu-recorder/main/docs/assets/logo.png" width="96" height="96" alt="Lingtu Unpack Recorder Logo"></a> | **[This project: Lingtu Unpack Recorder](https://github.com/907609732/lingtu-recorder/blob/main/README.en.md)**<br>Windows unpacking/packing recording and record management. |
-| <a href="https://github.com/907609732/lingtu-order-export/blob/master/docs/README.en.md"><img src="https://raw.githubusercontent.com/907609732/lingtu-order-export/master/build/icon.png" width="96" height="96" alt="E-commerce Purchase Order Export Logo"></a> | **[E-commerce Purchase Order Export](https://github.com/907609732/lingtu-order-export/blob/master/docs/README.en.md)**<br>Buyer purchase-order organization with Excel/CSV export. |
-| <a href="https://github.com/907609732/LTTLT-AI-Customer-Service"><img src="https://raw.githubusercontent.com/907609732/LTTLT-AI-Customer-Service/main/src/assets/lingtu-ai-icon.png" width="96" height="96" alt="Lingtu AI E-commerce Customer Service Logo"></a> | **[Lingtu AI E-commerce Customer Service](https://github.com/907609732/LTTLT-AI-Customer-Service)**<br>Store knowledge management and AI-assisted customer reception (Chinese). |
-
-Choose the tools you need and see each project for details.
-
 ## Guides, privacy, and license
+
+This project does not modify HIK SCAN or contain Hikvision source code, trademarks, or proprietary assets.
 
 - [User guide (English)](docs/user-guide.en.md): scanning, cameras, phone pairing, label design, migration, uninstall, troubleshooting.
 - [Local agent MCP + CLI integration](docs/agent/README.en.md): the eight source-branch tools, JSON output, exit codes and scope limits.

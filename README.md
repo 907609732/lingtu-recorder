@@ -6,13 +6,31 @@
   <img src="docs/assets/logo.png" width="180" alt="灵兔拆包智录 Logo">
 </p>
 
-这是一个面向中小商家的免费开源 Windows 拆包/打包录像、手机协同与数据同步系统。它不会修改 HIK SCAN，也不包含海康的源代码、商标或专有资源。
+**面向电商商家的 AI 辅助物流溯源与拆包取证软件。**
+
+围绕“单号—包裹—录像—异常记录”，留存拆包、退货验货和打包发货过程。遇到少件、错发、破损或售后争议，可按单号找回对应录像、照片与备注，核对包裹处理过程。
+
+- **物流溯源**：按单号、日期和异常标签查找包裹记录，回放对应处理过程。
+- **过程取证**：扫码录像、拍照留存、异常标记，配合 Excel / WPS 整理记录。
+- **AI 协同**：通过 MCP / CLI 让智能体查询记录、整理备注标签、重试同步；当前源码已支持，公开 v2.6.3 安装包尚未包含。
 
 官网：[record.lttlt.top](https://record.lttlt.top) · [品牌升级与数据保留](docs/operations/brand-upgrade.md) · [2.6.3 预发布说明](docs/releases/2.6.3.md)
 
 > 当前 **2.6.3 属于预发布（Prerelease）**，Windows 安装器尚未取得代码签名，首次运行可能出现 SmartScreen 提示。
 
 **快速导航**：[界面与功能](#软件界面与核心功能) · [下载安装](#下载与安装) · [四步开始](#四步快速开始) · [详细教程](docs/user-guide.md) · [常见问题](docs/user-guide.md#20-常见问题) · [许可证](#详细教程隐私与许可)
+
+## 灵兔电商 AI 溯源套件
+
+采购来源整理 → 包裹过程留证 → 售后核对与 AI 接待。三款软件各有分工，可按业务搭配使用。
+
+| Logo | 项目与用途 |
+| :---: | :--- |
+| <a href="https://github.com/907609732/lingtu-recorder"><img src="https://raw.githubusercontent.com/907609732/lingtu-recorder/main/docs/assets/logo.png" width="96" height="96" alt="灵兔拆包智录 Logo"></a> | **[本项目：灵兔拆包智录](https://github.com/907609732/lingtu-recorder)**<br>物流溯源与过程取证：按单号查拆包/打包录像、照片和异常备注。 |
+| <a href="https://github.com/907609732/lingtu-order-export"><img src="https://raw.githubusercontent.com/907609732/lingtu-order-export/master/build/icon.png" width="96" height="96" alt="电商平台采购订单导出 Logo"></a> | **[电商平台采购订单导出](https://github.com/907609732/lingtu-order-export)**<br>采购溯源：整理买家订单、商品明细与物流信息，导出 Excel/CSV。 |
+| <a href="https://github.com/907609732/LTTLT-AI-Customer-Service"><img src="https://raw.githubusercontent.com/907609732/LTTLT-AI-Customer-Service/main/src/assets/lingtu-ai-icon.png" width="96" height="96" alt="灵兔 AI 电商客服 Logo"></a> | **[灵兔 AI 电商客服](https://github.com/907609732/LTTLT-AI-Customer-Service)**<br>售后协同：管理店铺与商品知识，辅助处理咨询和售后回复。 |
+
+各应用独立安装、分别保存数据；可按单号核对采购与包裹记录，目前不自动互传订单、录像或客服数据。
 
 ## 软件界面与核心功能
 
@@ -63,17 +81,9 @@
 
 可选匿名统计默认勾选，不需要时可取消，或稍后在“系统设置 → 关于”关闭。
 
-## 灵兔电商工具套件
-
-| Logo | 项目与用途 |
-| :---: | :--- |
-| <a href="https://github.com/907609732/lingtu-recorder"><img src="https://raw.githubusercontent.com/907609732/lingtu-recorder/main/docs/assets/logo.png" width="96" height="96" alt="灵兔拆包智录 Logo"></a> | **[本项目：灵兔拆包智录](https://github.com/907609732/lingtu-recorder)**<br>Windows 拆包/打包录像与记录管理。 |
-| <a href="https://github.com/907609732/lingtu-order-export"><img src="https://raw.githubusercontent.com/907609732/lingtu-order-export/master/build/icon.png" width="96" height="96" alt="电商平台采购订单导出 Logo"></a> | **[电商平台采购订单导出](https://github.com/907609732/lingtu-order-export)**<br>买家采购订单整理及 Excel/CSV 导出。 |
-| <a href="https://github.com/907609732/LTTLT-AI-Customer-Service"><img src="https://raw.githubusercontent.com/907609732/LTTLT-AI-Customer-Service/main/src/assets/lingtu-ai-icon.png" width="96" height="96" alt="灵兔 AI 电商客服 Logo"></a> | **[灵兔 AI 电商客服](https://github.com/907609732/LTTLT-AI-Customer-Service)**<br>店铺知识管理与 AI 客服辅助接待。 |
-
-各项目可按需要选用，功能和使用方式请查看各自说明。
-
 ## 详细教程、隐私与许可
+
+本项目不修改 HIK SCAN，也不包含海康的源代码、商标或专有资源。
 
 - [用户教程（中文）](docs/user-guide.md)：扫码、相机、手机配对、条码设计、迁移、卸载与故障排查。
 - [本机智能体 MCP + CLI 接入](docs/agent/README.md)：源码开发分支的 8 个工具、JSON 输出、退出码与范围限制。
