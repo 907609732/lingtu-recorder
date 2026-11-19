@@ -55,6 +55,9 @@ public sealed class SqliteScanRecordRepository : IScanRecordRepository
                 failure_reason TEXT NULL,
                 created_at TEXT NOT NULL,
                 updated_at TEXT NOT NULL,
+                first_frame_path TEXT NULL,
+                first_frame_check TEXT NOT NULL DEFAULT 'NotAttempted',
+                first_frame_captured_at TEXT NULL,
                 deleted_at TEXT NULL
             );
 
@@ -170,6 +173,9 @@ public sealed class SqliteScanRecordRepository : IScanRecordRepository
         await EnsureColumnAsync(connection, "scan_records", "note_updated_at", "TEXT NULL", cancellationToken);
         await EnsureColumnAsync(connection, "scan_records", "media_integrity", "TEXT NOT NULL DEFAULT 'Complete'", cancellationToken);
         await EnsureColumnAsync(connection, "scan_records", "default_media_asset_id", "TEXT NULL", cancellationToken);
+        await EnsureColumnAsync(connection, "scan_records", "first_frame_path", "TEXT NULL", cancellationToken);
+        await EnsureColumnAsync(connection, "scan_records", "first_frame_check", "TEXT NOT NULL DEFAULT 'NotAttempted'", cancellationToken);
+        await EnsureColumnAsync(connection, "scan_records", "first_frame_captured_at", "TEXT NULL", cancellationToken);
         await EnsureColumnAsync(connection, "record_media_assets", "storage_target_id", "TEXT NOT NULL DEFAULT ''", cancellationToken);
         await EnsureColumnAsync(connection, "record_media_assets", "relative_video_path", "TEXT NOT NULL DEFAULT ''", cancellationToken);
         await EnsureColumnAsync(connection, "record_media_assets", "codec", "TEXT NOT NULL DEFAULT ''", cancellationToken);
@@ -278,13 +284,15 @@ public sealed class SqliteScanRecordRepository : IScanRecordRepository
                 recording_started_at, recording_ended_at, video_path,
                 snapshots_json, camera_id, station_id, duplicate_of,
                 platform_match_status, note, note_updated_at, media_integrity,
-                default_media_asset_id, failure_reason, created_at, updated_at)
+                default_media_asset_id, failure_reason, created_at, updated_at,
+                first_frame_path, first_frame_check, first_frame_captured_at)
             VALUES (
                 $id, $trackingNo, $workflow, $state, $scannedAt,
                 $recordingStartedAt, $recordingEndedAt, $videoPath,
                 $snapshotsJson, $cameraId, $stationId, $duplicateOf,
                 $platformMatchStatus, $note, $noteUpdatedAt, $mediaIntegrity,
-                $defaultMediaAssetId, $failureReason, $createdAt, $updatedAt);
+                $defaultMediaAssetId, $failureReason, $createdAt, $updatedAt,
+                $firstFramePath, $firstFrameCheck, $firstFrameCapturedAt);
             """;
         BindRecord(command, record);
         return command;
@@ -333,14 +341,16 @@ public sealed class SqliteScanRecordRepository : IScanRecordRepository
                 snapshots_json, camera_id, station_id, duplicate_of,
                 platform_match_status, note, note_updated_at, media_integrity,
                 default_media_asset_id, failure_reason,
-                created_at, updated_at, deleted_at)
+                created_at, updated_at, deleted_at,
+                first_frame_path, first_frame_check, first_frame_captured_at)
             VALUES (
                 $id, $trackingNo, $workflow, $state, $scannedAt,
                 $recordingStartedAt, $recordingEndedAt, $videoPath,
                 $snapshotsJson, $cameraId, $stationId, $duplicateOf,
                 $platformMatchStatus, $note, $noteUpdatedAt, $mediaIntegrity,
                 $defaultMediaAssetId, $failureReason,
-                $createdAt, $updatedAt, NULL)
+                $createdAt, $updatedAt, NULL,
+                $firstFramePath, $firstFrameCheck, $firstFrameCapturedAt)
             ON CONFLICT(id) DO UPDATE SET
                 tracking_no=excluded.tracking_no,
                 workflow=excluded.workflow,
@@ -364,6 +374,9 @@ public sealed class SqliteScanRecordRepository : IScanRecordRepository
                     THEN excluded.note_updated_at ELSE scan_records.note_updated_at END,
                 media_integrity=excluded.media_integrity,
                 default_media_asset_id=excluded.default_media_asset_id,
+                first_frame_path=excluded.first_frame_path,
+                first_frame_check=excluded.first_frame_check,
+                first_frame_captured_at=excluded.first_frame_captured_at,
                 failure_reason=excluded.failure_reason,
                 created_at=MIN(scan_records.created_at, excluded.created_at),
                 updated_at=MAX(scan_records.updated_at, excluded.updated_at),
@@ -423,6 +436,9 @@ public sealed class SqliteScanRecordRepository : IScanRecordRepository
                 note_updated_at=$noteUpdatedAt,
                 media_integrity=$mediaIntegrity,
                 default_media_asset_id=$defaultMediaAssetId,
+                first_frame_path=$firstFramePath,
+                first_frame_check=$firstFrameCheck,
+                first_frame_captured_at=$firstFrameCapturedAt,
                 failure_reason=$failureReason,
                 updated_at=$updatedAt
             WHERE id=$id AND deleted_at IS NULL;

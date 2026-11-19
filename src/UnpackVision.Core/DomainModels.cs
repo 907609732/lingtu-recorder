@@ -132,6 +132,17 @@ public sealed record ScannerProfile
     }
 }
 
+/// <summary>
+/// 首帧面单回读判定结果。任何一档都不阻断录像，只影响界面提示与检索筛选。
+/// </summary>
+public enum FirstFrameCheck
+{
+    NotAttempted,
+    Match,
+    Mismatch,
+    Unreadable
+}
+
 public sealed class ScanRecord
 {
     public Guid Id { get; set; } = Guid.NewGuid();
@@ -143,6 +154,13 @@ public sealed class ScanRecord
     public DateTimeOffset? RecordingEndedAt { get; set; }
     public string? VideoPath { get; set; }
     public IReadOnlyList<string> Snapshots { get; set; } = [];
+    /// <summary>
+    /// 扫码瞬间自动留存的首帧图片路径。首帧是留证增强能力，拍不到时为 null，
+    /// 不影响录像本身；它不进 <see cref="Snapshots"/>，避免“照片 N 张”计数被污染。
+    /// </summary>
+    public string? FirstFramePath { get; set; }
+    public FirstFrameCheck FirstFrameCheck { get; set; } = FirstFrameCheck.NotAttempted;
+    public DateTimeOffset? FirstFrameCapturedAt { get; set; }
     public string? CameraId { get; set; }
     public MediaIntegrityStatus MediaIntegrity { get; set; } = MediaIntegrityStatus.Complete;
     public Guid? DefaultMediaAssetId { get; set; }

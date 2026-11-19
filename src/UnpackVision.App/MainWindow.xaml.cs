@@ -135,7 +135,8 @@ public partial class MainWindow : Window, ICameraConfigurationPreviewHost
                 _recordingBackend,
                 new NullEventPublisher(),
                 new SystemClock(),
-                _settings.Scanner);
+                _settings.Scanner,
+                barcodeReader: new ZxingBarcodeRecognitionService());
             _coordinator.StateChanged += Coordinator_OnStateChanged;
             _scanCommandLedger = new SqliteScanCommandLedger(_storageOptions, new SystemClock());
             await _scanCommandLedger.InitializeAsync(_lifetime.Token);
@@ -288,6 +289,7 @@ public partial class MainWindow : Window, ICameraConfigurationPreviewHost
                 Speak(result.Message.Contains("上一单", StringComparison.Ordinal)
                     ? "上一单已保存，开始录制下一单"
                     : result.Record?.DuplicateOf is null ? "开始录制" : "开始录制，重复单号");
+                AnnounceFirstFrame(result.Record);
                 break;
             case ScanAction.Stopped:
                 if (result.Message.Contains("已保存", StringComparison.Ordinal))
@@ -324,6 +326,27 @@ public partial class MainWindow : Window, ICameraConfigurationPreviewHost
                 break;
         }
         ScannerInput.Focus();
+    }
+
+    /// <summary>
+    /// 首帧面单回读结果只做提示：通过时不额外播报，避免打断现场扫码节奏；
+    /// 不符时立刻语音告警，这是本功能唯一需要打断操作的场景。
+    /// </summary>
+    private void AnnounceFirstFrame(ScanRecord? record)
+    {
+        switch (record?.FirstFrameCheck)
+        {
+            case FirstFrameCheck.Match:
+                FooterText.Text = "面单校验通过";
+                break;
+            case FirstFrameCheck.Mismatch:
+                FooterText.Text = "面单与单号不符，请核对包裹";
+                Speak("面单与单号不符，请核对包裹");
+                break;
+            case FirstFrameCheck.Unreadable:
+                FooterText.Text = "面单未识别，请人工确认";
+                break;
+        }
     }
 
     private void Updates_OnUpdateReady(object? sender, EventArgs e) =>
@@ -1472,7 +1495,8 @@ public partial class MainWindow : Window, ICameraConfigurationPreviewHost
             _recordingBackend,
             new NullEventPublisher(),
             new SystemClock(),
-            _settings.Scanner);
+            _settings.Scanner,
+            barcodeReader: new ZxingBarcodeRecognitionService());
         _coordinator.StateChanged += Coordinator_OnStateChanged;
         RebuildStationRouter();
         PopulateCameraSourceSelector();
@@ -1529,7 +1553,8 @@ public partial class MainWindow : Window, ICameraConfigurationPreviewHost
                 _recordingBackend,
                 new NullEventPublisher(),
                 new SystemClock(),
-                _settings.Scanner);
+                _settings.Scanner,
+                barcodeReader: new ZxingBarcodeRecognitionService());
             _coordinator.StateChanged += Coordinator_OnStateChanged;
             RebuildStationRouter();
             BuildCameraPreviewGrid();

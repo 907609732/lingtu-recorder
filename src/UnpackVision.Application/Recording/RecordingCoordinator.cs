@@ -23,6 +23,7 @@ public sealed class RecordingCoordinator
     private readonly IEventPublisher _eventPublisher;
     private readonly IClock _clock;
     private readonly string _connectorId;
+    private readonly IBarcodeRecognitionService? _barcodeReader;
     private RecordingSession? _session;
     private ScanRecord? _currentRecord;
     private string? _lastAcceptedScanValue;
@@ -34,7 +35,8 @@ public sealed class RecordingCoordinator
         IEventPublisher eventPublisher,
         IClock clock,
         ScannerProfile scannerProfile,
-        string connectorId = "excel")
+        string connectorId = "excel",
+        IBarcodeRecognitionService? barcodeReader = null)
     {
         _repository = repository;
         _recordingBackend = recordingBackend;
@@ -42,6 +44,7 @@ public sealed class RecordingCoordinator
         _clock = clock;
         ScannerProfile = scannerProfile;
         _connectorId = connectorId;
+        _barcodeReader = barcodeReader;
     }
 
     public ScannerProfile ScannerProfile { get; private set; }
@@ -157,6 +160,65 @@ public sealed class RecordingCoordinator
         finally
         {
             _gate.Release();
+        }
+    }
+
+    /// <summary>
+    /// 扫码瞬间留证：抓一帧并回读面单条码。相机在 StartAsync 返回时可能还没吐出
+    /// 第一帧（TakeSnapshotAsync 会抛 InvalidOperationException），这里重试等待，
+    /// 而不把录像标记为失败——首帧属于增强能力，拍不到也要能正常录。
+    /// </summary>
+    private async Task CaptureFirstFrameAsync(ScanRecord record, CancellationToken cancellationToken)
+    {
+        const int maxAttempts = 5;
+        for (var attempt = 0; attempt < maxAttempts; attempt++)
+        {
+            try
+            {
+                record.FirstFramePath = await _recordingBackend.TakeSnapshotAsync(cancellationToken);
+                record.FirstFrameCapturedAt = _clock.Now;
+                record.FirstFrameCheck = await VerifyFirstFrameAsync(record, cancellationToken);
+                return;
+            }
+            catch (OperationCanceledException)
+            {
+                throw;
+            }
+            catch (InvalidOperationException) when (attempt < maxAttempts - 1)
+            {
+                await Task.Delay(TimeSpan.FromMilliseconds(200), cancellationToken);
+            }
+            catch (Exception)
+            {
+                // 首帧拍不到不改变录像状态，界面按“未留证”提示即可。
+                return;
+            }
+        }
+    }
+
+    private async Task<FirstFrameCheck> VerifyFirstFrameAsync(
+        ScanRecord record,
+        CancellationToken cancellationToken)
+    {
+        if (_barcodeReader is null || string.IsNullOrWhiteSpace(record.FirstFramePath))
+        {
+            return FirstFrameCheck.NotAttempted;
+        }
+
+        try
+        {
+            var codes = await _barcodeReader.RecognizeAsync(record.FirstFramePath, cancellationToken);
+            return FirstFrameMatcher.Match(codes, record.TrackingNo);
+        }
+        catch (OperationCanceledException)
+        {
+            throw;
+        }
+        catch (Exception)
+        {
+            // 识别服务本身出错时按“未识别”处理：界面提示人工确认，
+            // 不能当成“不符”去告警，否则相机抖一下就会误报。
+            return FirstFrameCheck.Unreadable;
         }
     }
 
@@ -279,6 +341,10 @@ public sealed class RecordingCoordinator
             record.RecordingStartedAt = _session.StartedAt;
             record.VideoPath = _session.TemporaryPath;
             record.UpdatedAt = _clock.Now;
+            await _repository.UpdateAsync(record, cancellationToken);
+            // 先把“录制中”落库，再抓首帧：抓帧和条码回读都可能慢几百毫秒，
+            // 不能让界面等这一步才显示已经在录。抓不到首帧只影响留证字段。
+            await CaptureFirstFrameAsync(record, cancellationToken);
             await _repository.UpdateAsync(record, cancellationToken);
             await _eventPublisher.PublishAsync(
                 duplicate is null ? "record.started" : "record.duplicate",
