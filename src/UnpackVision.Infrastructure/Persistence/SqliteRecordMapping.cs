@@ -40,6 +40,9 @@ internal static class SqliteRecordMapping
         command.Parameters.AddWithValue("$recordingEndedAt", Db(record.RecordingEndedAt));
         command.Parameters.AddWithValue("$videoPath", Db(record.VideoPath is null ? null : Path.GetFullPath(record.VideoPath)));
         command.Parameters.AddWithValue("$snapshotsJson", record.SnapshotsJson);
+        command.Parameters.AddWithValue("$firstFramePath", Db(record.FirstFramePath is null ? null : Path.GetFullPath(record.FirstFramePath)));
+        command.Parameters.AddWithValue("$firstFrameCheck", record.FirstFrameCheck.ToString());
+        command.Parameters.AddWithValue("$firstFrameCapturedAt", Db(record.FirstFrameCapturedAt));
         command.Parameters.AddWithValue("$cameraId", Db(record.CameraId));
         command.Parameters.AddWithValue("$stationId", record.StationId);
         command.Parameters.AddWithValue("$duplicateOf", Db(record.DuplicateOf?.ToString("D")));
@@ -64,6 +67,11 @@ internal static class SqliteRecordMapping
         RecordingEndedAt = ReadDate(reader, "recording_ended_at"),
         VideoPath = ReadString(reader, "video_path"),
         SnapshotsJson = reader.GetString(reader.GetOrdinal("snapshots_json")),
+        FirstFramePath = ReadString(reader, "first_frame_path"),
+        FirstFrameCheck = Enum.TryParse<FirstFrameCheck>(ReadString(reader, "first_frame_check"), out var firstFrameCheck)
+            ? firstFrameCheck
+            : FirstFrameCheck.NotAttempted,
+        FirstFrameCapturedAt = ReadDate(reader, "first_frame_captured_at"),
         CameraId = ReadString(reader, "camera_id"),
         StationId = reader.GetString(reader.GetOrdinal("station_id")),
         DuplicateOf = ReadGuid(reader, "duplicate_of"),
